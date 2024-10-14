@@ -78,9 +78,8 @@ rebuild() {
 	fi
 	rm -rf "$REBUILT_MAVEN_REPO_DIR"
 	mkdir -p "$REBUILT_MAVEN_REPO_DIR"
-	pushd "$GIT_CLONE_DIR"
+	cd "$GIT_CLONE_DIR"
 	./gradlew publishToMavenLocal -x test --no-build-cache -Dmaven.repo.local="$REBUILT_MAVEN_REPO_DIR" -Dorg.gradle.java.home="$JHOME"
-	popd
 }
 
 ARTIFACT_COUNT=0
