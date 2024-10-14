@@ -221,9 +221,15 @@ replace_timestamps() {
 }
 
 replace_common_text_differences() {
-	replace_timestamps | sed -E -f <(cat <<-EOF
+	replace_timestamps | sed -E -f <(cat <<-'EOF'
+	/<\?xml version="1\.0" encoding="UTF-8"\?>/d
+	s,<project xsi:schemaLocation="([^"]+)" xmlns:xsi="([^"]+)" xmlns="([^"]+)">,<project xmlns="\3" xmlns:xsi="\2" xsi:schemaLocation="\1">,g
+	s,http://maven.apache.org/POM/4.0.0,https://maven.apache.org/POM/4.0.0,g
+	s,http://maven.apache.org/xsd/maven-4.0.0.xsd,https://maven.apache.org/xsd/maven-4.0.0.xsd,g
+	s/^(\s)+//g
 	s/ ?aria-[^=]+="[^"]+"//g
-	s/(document\.getElementById|document.querySelector)\([^)]+\)//g
+	s/(document\.getElementById|document\.querySelector)\([^)]+\)//g
+	$a\\
 	EOF
 	)
 }
