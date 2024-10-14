@@ -201,7 +201,7 @@ diff_file_ignoring_timestamps() {
 	then
 		$DIFF_CMD <(decompile "$1" | replace_timestamps) <(decompile "$2" | replace_timestamps)
 	else
-		$DIFF_CMD <(cat_silent "$1" | replace_timestamps) <(cat_silent "$2" | replace_timestamps)
+		$DIFF_CMD <(cat_silent "$1" | replace_common_text_differences) <(cat_silent "$2" | replace_common_text_differences)
 	fi
 }
 
@@ -216,6 +216,14 @@ cat_silent() {
 
 replace_timestamps() {
 	sed -E 's/20[[:digit:]]{2}-[[:digit:]]{1,2}-[[:digit:]]{1,2}([ T][[:digit:]]{2}:[[:digit:]]{2}(:[[:digit:]]{2})?)?/SOME_DATE/g'
+}
+
+replace_common_text_differences() {
+	replace_timestamps | sed -E -f <(cat <<-EOF
+	s/ ?aria-[^=]+="[^"]+"//g
+	s/(document\.getElementById|document.querySelector)\([^)]+\)//g
+	EOF
+	)
 }
 
 decompile() {
