@@ -86,6 +86,7 @@ rebuild() {
 ARTIFACT_COUNT=0
 FILE_COUNT=0
 FILE_DIFFERENT_COUNT=0
+FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT=0
 
 check() {
 	mkdir -p "$PUBLISHED_MAVEN_REPO_DIR"
@@ -107,7 +108,8 @@ on_exit() {
 	$JHOME/bin/java -version
 	log "Examined $ARTIFACT_COUNT artifacts."
 	log "Examined $FILE_COUNT files (identical files within JARs are not counted)."
-	log "Found $FILE_DIFFERENT_COUNT files containing differences."
+	log "Found $FILE_DIFFERENT_COUNT files containing significant differences."
+	log "Ignored $FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT files containing differences, but that are known not to be reproducible."
 	log "Run $0 $JHOME $VERSION <artifact> to show the diff for a particular artifact."
 	log "================================================================================"
 }
@@ -171,11 +173,30 @@ check_file() {
 	if diff_file_ignoring_timestamps "$2" "$3"
 	then
 		$CHECK_FILE_AFTER
+	elif is_known_not_reproducible "$1"
+	then
+		$CHECK_FILE_AFTER
+		FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT=$(( FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT + 1 ))
 	else
 		$CHECK_FILE_AFTER
 		FILE_DIFFERENT_COUNT=$(( FILE_DIFFERENT_COUNT + 1 ))
 		log "$1 differs!"
 	fi
+}
+
+is_known_not_reproducible() {
+	echo "$1" | grep -E -f <(cat <<-'EOF'
+	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmBagCollectionType\.(class|java|html)
+	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmBagCollectionType\.(class|java|html)
+	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmIdBagCollectionType\.(class|java|html)
+	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmIdBagCollectionType\.(class|java|html)
+	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmListType\.(class|java|html)
+	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmListType\.(class|java|html)
+	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmSetType\.(class|java|html)
+	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmSetType\.(class|java|html)
+	org/hibernate/orm/hibernate-gradle-plugin/[^/]+/hibernate-gradle-plugin-[^\-]+\.(pom|module)
+	EOF
+	)
 }
 
 extract_jar() {
