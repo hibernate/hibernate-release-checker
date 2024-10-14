@@ -103,10 +103,12 @@ check() {
 
 on_exit() {
 	log "================================================================================"
+	log "Used the following JDK:"
+	$JHOME/bin/java -version
 	log "Examined $ARTIFACT_COUNT artifacts."
 	log "Examined $FILE_COUNT files (identical files within JARs are not counted)."
 	log "Found $FILE_DIFFERENT_COUNT files containing differences."
-	log "Run $0 $JHOME $VERSION <file> to show the diff for a particular file."
+	log "Run $0 $JHOME $VERSION <artifact> to show the diff for a particular artifact."
 	log "================================================================================"
 }
 
