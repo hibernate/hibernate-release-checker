@@ -49,3 +49,12 @@ To diff a single artifact published for a given version of Hibernate ORM:
 ```shell
 ./check-orm.sh ~/tools/java/jdk17 6.6.0.Final org/hibernate/orm/hibernate-gradle-plugin/6.6.0.Final/hibernate-gradle-plugin-6.6.0.Final.pom
 ```
+
+## Contributing
+
+* Some versions of Hibernate ORM may not build properly.
+  If so, you need to contribute hacks to the `rebuild()` function in `check-orm.sh`.
+* Some versions of Hibernate ORM may have additional known differences in text files from one build to the next.
+  If so, you need to contribute additional `sed` replacements to the `replace_common_text_differences()` function in `check-orm.sh`.
+* Some versions of Hibernate ORM may have additional non-reproducible files.
+  If so, you need to contribute additional patterns to the `is_known_not_reproducible()` function in `check-orm.sh`.
