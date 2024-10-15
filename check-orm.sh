@@ -43,7 +43,7 @@ log_clearable() {
 }
 
 log_clear() {
-	tput el1 rc
+	tput el el1 rc
 }
 
 diff_silent() {
@@ -117,15 +117,22 @@ check() {
 }
 
 on_exit() {
-	log "================================================================================"
-	log "Used the following JDK:"
-	$JHOME/bin/java -version
-	log "Examined $ARTIFACT_COUNT artifacts."
-	log "Examined $FILE_COUNT files (identical files within JARs are not counted)."
-	log "Found $FILE_DIFFERENT_COUNT files containing significant differences."
-	log "Ignored $FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT files containing differences, but that are known not to be reproducible."
-	log "Run $0 $JHOME $VERSION <artifact> to show the diff for a particular artifact."
-	log "================================================================================"
+	log "
+
+
+================================================================================
+Used the following JDK:
+
+$($JHOME/bin/java -version 2>&1 | sed "s/^/    /g")
+
+Examined $ARTIFACT_COUNT artifacts.
+Examined $FILE_COUNT files (identical files within JARs are not counted).
+Ignored $FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT files containing differences, but that are known not to be reproducible.
+
+$(tput bold)Found $FILE_DIFFERENT_COUNT files containing significant differences.$(tput sgr0)
+
+Run $0 $JHOME $VERSION <artifact-path> to show the diff for a particular artifact.
+================================================================================"
 }
 
 check_artifact() {
@@ -176,6 +183,7 @@ download_published() {
 	then
 		log_clear
 	else
+		log
 		log "Download failed for $repo/$1"
 		exit 1
 	fi
@@ -218,6 +226,7 @@ extract_jar() {
 	then
 		log_clear
 	else
+		log
 		log "Extraction failed for $1"
 		exit 1
 	fi
