@@ -69,12 +69,14 @@ FILE_TO_DIFF=""
 DIFF_CMD="diff_silent"
 CHECK_FILE_BEFORE='log_clearable Checking'
 CHECK_FILE_AFTER='log_clear'
+CHECK_FILE_LOG_NOT_REPRODUCIBLE='true'
 if (( $# > 0 ))
 then
 	FILE_TO_DIFF="$1"
 	DIFF_CMD="diff_patch"
 	CHECK_FILE_BEFORE='true'
 	CHECK_FILE_AFTER='true'
+	CHECK_FILE_LOG_NOT_REPRODUCIBLE='log'
 	shift
 fi
 
@@ -199,6 +201,7 @@ check_file() {
 	then
 		$CHECK_FILE_AFTER
 		FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT=$(( FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT + 1 ))
+		$CHECK_FILE_LOG_NOT_REPRODUCIBLE "NOTE: $1 differs, but is known not to be reproducible, and is therefore ignored."
 	else
 		$CHECK_FILE_AFTER
 		FILE_DIFFERENT_COUNT=$(( FILE_DIFFERENT_COUNT + 1 ))
