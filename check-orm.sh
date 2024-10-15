@@ -81,7 +81,7 @@ then
 fi
 
 TAG="${VERSION%.Final}"
-WORK_DIR="/tmp/hibernate-orm-binary-check/$VERSION"
+WORK_DIR="/tmp/hibernate-binary-check/orm/$VERSION"
 GIT_CLONE_DIR="$WORK_DIR/git-clone"
 REBUILT_MAVEN_REPO_DIR="$WORK_DIR/rebuilt-maven-repo"
 PUBLISHED_MAVEN_REPO_DIR="$WORK_DIR/published-maven-repo"
