@@ -12,6 +12,10 @@ Since older versions of Hibernate ORM (before https://github.com/hibernate/hiber
 
 See the source of the script for more details.
 
+## Check history
+
+Artifacts that have been checked by team members are listed in `CHECKED.md`.
+
 ## Requirements
 
 * A GNU/Linux environment -- not tested on other POSIX environments.
