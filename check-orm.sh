@@ -1,7 +1,7 @@
 #!/bin/bash -Eeu
 
 log() {
-	echo 2>&1 "${@}"
+	echo 1>&2 "${@}"
 }
 
 usage() {
@@ -38,12 +38,12 @@ log_clearable() {
 		available_chars=$(( available_chars - ${#ellipsis} ))
 		suffix="$ellipsis$(echo "$suffix" | tail -c $available_chars)"
 	fi
-	tput sc
-	log -n "$prefix$suffix"
+	tput >/dev/tty sc
+	echo >/dev/tty -n "$prefix$suffix"
 }
 
 log_clear() {
-	tput el el1 rc
+	tput >/dev/tty el el1 rc
 }
 
 diff_silent() {
@@ -121,7 +121,7 @@ check() {
 }
 
 on_exit() {
-	log "
+	echo "
 
 
 ================================================================================
@@ -210,7 +210,7 @@ check_file() {
 	else
 		$CHECK_FILE_AFTER
 		FILE_DIFFERENT_COUNT=$(( FILE_DIFFERENT_COUNT + 1 ))
-		log "$1 differs!"
+		echo "$1 differs!"
 	fi
 }
 
