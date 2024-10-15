@@ -40,6 +40,14 @@ To diff a single artifact published for a given version of Hibernate ORM:
 * `<version>`: The version of Hibernate ORM to rebuild and compare. Must include the `.Final` qualifier if relevant, e.g. `6.2.0.CR1` or `6.2.1.Final`.
 * `<artifact-path>`: The path of a single artifact to diff, relative to the root of the Maven repository. You can simply copy-paste paths reported by the all-artifact diff.
 
+To diff all artifacts of a selected subset of versions of Hibernate ORM:
+
+```
+./check-orm-all.sh
+```
+
+NOTE: This expects `JAVA<number>_HOME` environment variables to be set to point to the path of JDK installations, e.g. `JAVA11_HOME`, `JAVA17_HOME`, ...
+
 ## Examples
 
 ```shell
