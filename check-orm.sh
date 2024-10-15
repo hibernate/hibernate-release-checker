@@ -174,6 +174,8 @@ check_artifact() {
 	do
 		check_file "$name: $path" "$rebuilt_extracted_path/$path" "$published_extracted_path/$path"
 	done
+
+	rm -rf "$rebuilt_extracted_path" "$published_extracted_path"
 }
 
 download_published() {
