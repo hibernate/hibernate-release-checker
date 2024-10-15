@@ -17,12 +17,13 @@ do
 		java_home="${!java_home_var_name}"
 		if [ -z "$java_home" ]
 		then
-			echo "ERROR: \$$java_home_var_name is not set; unable to rebuild $version with JDK $jdk." | tee /dev/stderr
+			log "ERROR: \$$java_home_var_name is not set; unable to rebuild $version with JDK $jdk."
 		else
 			# Use </dev/null to avoid gradlew consuming all stdin.
 			./check-orm.sh "${java_home}" "$version" </dev/null
 		fi
 	} 2>&1 | tee "$OUT_DIR/$version.log"
+	log "Wrote output to $OUT_DIR/$version.log"
 done <<EOF
 11 6.2.25.Final
 11 6.2.26.Final
