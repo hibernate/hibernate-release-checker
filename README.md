@@ -52,6 +52,7 @@ To diff a single artifact published for a given version of Hibernate ORM:
 
 ## Contributing
 
+* Terminal output is best-effort; it might glitch from time to time.
 * Some versions of Hibernate ORM may not build properly.
   If so, you need to contribute hacks to the `rebuild()` function in `check-orm.sh`.
 * Some versions of Hibernate ORM may have additional known differences in text files from one build to the next.
