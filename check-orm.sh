@@ -99,6 +99,7 @@ rebuild() {
 	./gradlew publishToMavenLocal -x test --no-build-cache -Dmaven.repo.local="$REBUILT_MAVEN_REPO_DIR" -Dorg.gradle.java.home="$JHOME"
 }
 
+CHECK_DONE=0
 ARTIFACT_COUNT=0
 FILE_COUNT=0
 FILE_DIFFERENT_COUNT=0
@@ -116,6 +117,7 @@ check() {
 			check_artifact "$file"
 		done
 	fi
+	CHECK_DONE=1
 }
 
 on_exit() {
@@ -123,6 +125,8 @@ on_exit() {
 
 
 ================================================================================
+Finished checking version $VERSION on $(date -Iminutes --utc) UTC
+
 Used the following JDK:
 
 $($JHOME/bin/java -version 2>&1 | sed "s/^/    /g")
@@ -132,7 +136,8 @@ Examined $FILE_COUNT files (identical files within JARs are not counted).
 Ignored $FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT files containing differences, but that are known not to be reproducible.
 
 $(tput bold)Found $FILE_DIFFERENT_COUNT files containing significant differences.$(tput sgr0)
-
+$((( CHECK_DONE != 1 )) && echo -e "\nWARNING: This check was terminated unexpectedly, this report is incomplete.")
+================================================================================
 Run $0 $JHOME $VERSION <artifact-path> to show the diff for a particular artifact.
 ================================================================================"
 }
