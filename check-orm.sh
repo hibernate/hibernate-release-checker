@@ -216,11 +216,9 @@ check_file() {
 
 is_known_not_reproducible() {
 	echo "$1" | grep -E -f <(cat <<-'EOF'
-	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmBagCollectionType\.(class|java|html)
-	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmIdBagCollectionType\.(class|java|html)
-	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmListType\.(class|java|html)
-	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmMapType\.(class|java|html)
-	: org/hibernate/boot/jaxb/hbm/spi/JaxbHbmSetType\.(class|java|html)
+	hibernate-core-[^-]+.jar: org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.class
+	hibernate-core-[^-]+-sources.jar: org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.java
+	hibernate-core-[^-]+-javadoc.jar: org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.html
 	org/hibernate/orm/hibernate-gradle-plugin/[^/]+/hibernate-gradle-plugin-[^\-]+\.(pom|module)
 	EOF
 	)
