@@ -257,8 +257,7 @@ Ignored $FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT files containing difference
 $(tput bold)Found $FILE_DIFFERENT_COUNT files containing significant differences.$(tput sgr0)
 $((( CHECK_DONE != 1 )) && echo -e "\nWARNING: This check was terminated unexpectedly, this report is incomplete.")
 ================================================================================
-Run $0 $JHOME $VERSION <artifact-path> to show the diff for a particular artifact.
-================================================================================"
+Run $0 $VERSION <artifact-path> to show the diff for a particular artifact."
 }
 
 check_artifact() {
