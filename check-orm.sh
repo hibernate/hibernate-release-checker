@@ -346,6 +346,10 @@ is_known_not_reproducible() {
 	# The gradle plugin metadata is wrong, because we're using a hack to get it published using publishToMavenLocal
 	# (it's normally published using a different task that is specific to Gradle plugins)
 	org/hibernate/orm/hibernate-gradle-plugin/[^/]+/hibernate-gradle-plugin-[^\-]+\.(pom|module)
+	# The JQuery version included in javadoc changes in *micro* versions of the JDK.
+	# See for example https://bugs.openjdk.org/browse/JDK-8291029
+	-javadoc.jar: legal/jqueryUI.md
+	-javadoc.jar: jquery/jquery-ui.min.(js|css)
 	EOF
 	)
 }
@@ -407,6 +411,9 @@ replace_common_text_differences() {
 	s/(document\.getElementById|document\.querySelector)\([^)]+\)//g
 	# Some files may not have a newline at their end -- we don't care
 	$a\\
+	# Links with anchors may not be generated correctly in the rebuild for some reason
+	s,<a href="[^"#]*#[^"]+">,,g
+	s,</a>,,g
 	EOF
 	)
 }
