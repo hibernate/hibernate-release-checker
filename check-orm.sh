@@ -186,12 +186,44 @@ rebuild() {
 		log "Cloning..."
 		git clone --depth 1 git@github.com:hibernate/hibernate-orm.git -b "$TAG" "$GIT_CLONE_DIR" 1>/dev/null
 	fi
+	cd "$GIT_CLONE_DIR"
+
+	apply_build_fix_commits
+
 	rm -rf "$REBUILT_MAVEN_REPO_DIR"
 	mkdir -p "$REBUILT_MAVEN_REPO_DIR"
-	cd "$GIT_CLONE_DIR"
 
 	log "Building using Java Home: $JHOME"
 	./gradlew publishToMavenLocal -x test --no-build-cache -Dmaven.repo.local="$REBUILT_MAVEN_REPO_DIR" -Dorg.gradle.java.home="$JHOME"
+}
+
+apply_build_fix_commits() {
+	local fix_commits=()
+	# A few commits to fix builds that no longer work due to e.g. changes in Maven repositories.
+	# See:
+	# https://github.com/hibernate/hibernate-orm/commit/1da18451ce9adf40c5939d050b6914cb7529e6eb
+	# https://github.com/hibernate/hibernate-orm/commit/e4a0b6988f84e85e427484e65321e9583080ccb5
+	# https://github.com/hibernate/hibernate-orm/commit/420faa7e4ac8a5065ed42f8338883193c944ff76
+	if [[ "$VERSION" =~ ^6\.6\.0\.\(Alpha\|Beta\|CR1\) ]]
+	then
+		fix_commits=("1da18451ce9adf40c5939d050b6914cb7529e6eb" "e4a0b6988f84e85e427484e65321e9583080ccb5" "420faa7e4ac8a5065ed42f8338883193c944ff76")
+	elif [[ "$VERSION" =~ ^6\.5\.[0-9]\..* ]]
+	then
+		fix_commits=("26f20caa6370bbf7077927823324dc674dba9387" "b2edca91dcc0a925bbd10b7d327871f5b81e2eea" "ea6dfd764f4d65d65e144e625fac579a2905f1fb")
+	elif [[ "$VERSION" =~ ^6\.4\.[0-9]\. ]] || [[ "$VERSION" =~ ^6\.3\. ]]
+	then
+		fix_commits=("f67acfcd65e4d78f2c0a91e883250c381478729c" "6f3258a97f4f7b7bd6e0e8f1fda4337ff74b6c98" "7ef269100b7bce5a2dab9f8c3097fd51d5cb56c4")
+	elif [[ "$VERSION" =~ ^6\.2\.[012][0-9]?\. ]]
+	then
+		fix_commits=("97e6f458192855692f2953020988da8fd3f844f7" "f810f648f9816ded3ae9e17a3ccf7f7c175b1cb7" "7ef269100b7bce5a2dab9f8c3097fd51d5cb56c4")
+	else
+		# Nothing to do
+		return 0
+	fi
+	log "Fetching additional commits to fix the build..."
+	git fetch origin "${fix_commits[@]}"
+	log "Applying additional commits to fix the build..."
+	git cherry-pick --empty=drop "${fix_commits[@]}"
 }
 
 on_exit() {
