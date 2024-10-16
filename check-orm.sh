@@ -336,7 +336,7 @@ check_file() {
 }
 
 is_known_not_reproducible() {
-	echo "$1" | grep -E -f <(cat <<-'EOF'
+	echo "$1" | grep -q -E -f <(cat <<-'EOF'
 	# These JAXB classes are generated, but the order of fields/getters/setters is semi-random (generator uses a HashSet)
 	hibernate-core-[^-]+.jar: org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.class
 	hibernate-core-[^-]+-sources.jar: (hbm/)?org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.java
