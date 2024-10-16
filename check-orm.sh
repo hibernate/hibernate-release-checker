@@ -447,7 +447,6 @@ case "$1" in
 			6.2.26.Final \
 			6.2.27.Final \
 			6.2.28.Final \
-			6.2.29.Final \
 			6.2.30.Final \
 			6.2.31.Final \
 			6.2.32.Final \
