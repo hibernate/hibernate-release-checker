@@ -226,7 +226,7 @@ check_artifact() {
 	rebuilt_path="$REBUILT_MAVEN_REPO_DIR/$name"
 	download_published "$name" "$published_path"
 
-	if ! [[ "$name" =~ .*\.jar ]]
+	if ! [[ "$name" =~ .*\.jar$ ]]
 	then
 		check_file "$name" "$REBUILT_MAVEN_REPO_DIR/$name" "$PUBLISHED_MAVEN_REPO_DIR/$name"
 		return
@@ -323,7 +323,7 @@ list_binary_different_files() {
 }
 
 diff_file_ignoring_timestamps() {
-	if [[ "$1" =~ .*\.class ]]
+	if [[ "$1" =~ .*\.class$ ]]
 	then
 		$DIFF_CMD <(decompile "$1" | replace_timestamps) <(decompile "$2" | replace_timestamps)
 	else
