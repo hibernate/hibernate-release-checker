@@ -87,6 +87,11 @@ check_all_versions_from_arguments() {
 	done
 
 	log "Copied output to files in $WORK_DIR"
+	log "Run the following command to display all reports:"
+	log <(cat <<-EOF
+	find $WORK_DIR -name '*.log' | xargs -I {} bash -c 'grep "========" {} -A 50 | grep "======" -B 50' -- grep
+	EOF
+	)
 }
 
 check_single_version_from_argument() {
