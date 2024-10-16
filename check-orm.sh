@@ -220,10 +220,23 @@ apply_build_fix_commits() {
 		# Nothing to do
 		return 0
 	fi
+	local commits_to_apply=()
+	for commit in ${fix_commits[@]}
+	do
+		if ! { git log HEAD~${#fix_commits[@]}..HEAD 2>/dev/null | grep -q "$commit"; }
+		then
+			# Apply the commit: it hasn't been applied yet
+			commits_to_apply+=( "$commit" )
+		fi
+	done
+	if (( ${#commits_to_apply[@]} == 0 ))
+	then
+		return
+	fi
 	log "Fetching additional commits to fix the build..."
-	git fetch origin "${fix_commits[@]}"
+	git fetch origin "${commits_to_apply[@]}"
 	log "Applying additional commits to fix the build..."
-	git cherry-pick --empty=drop "${fix_commits[@]}"
+	git cherry-pick -x --empty=drop "${commits_to_apply[@]}"
 }
 
 on_exit() {
