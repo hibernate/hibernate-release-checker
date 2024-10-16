@@ -337,10 +337,14 @@ check_file() {
 
 is_known_not_reproducible() {
 	echo "$1" | grep -E -f <(cat <<-'EOF'
+	# These JAXB classes are generated, but the order of fields/getters/setters is semi-random (generator uses a HashSet)
 	hibernate-core-[^-]+.jar: org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.class
 	hibernate-core-[^-]+-sources.jar: (hbm/)?org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.java
 	hibernate-core-[^-]+-javadoc.jar: org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.html
+	# Just about any change can lead to difference in javadoc search indexes
 	-javadoc.jar: (member|package|type)-search-index.zip
+	# The gradle plugin metadata is wrong, because we're using a hack to get it published using publishToMavenLocal
+	# (it's normally published using a different task that is specific to Gradle plugins)
 	org/hibernate/orm/hibernate-gradle-plugin/[^/]+/hibernate-gradle-plugin-[^\-]+\.(pom|module)
 	EOF
 	)
@@ -391,13 +395,17 @@ replace_timestamps() {
 
 replace_common_text_differences() {
 	replace_timestamps | sed -E -f <(cat <<-'EOF'
+	# Generated XML files, in particular for gradle-plugin, may differ -- probably some missing post-processing
 	/<\?xml version="1\.0" encoding="UTF-8"\?>/d
 	s,<project xsi:schemaLocation="([^"]+)" xmlns:xsi="([^"]+)" xmlns="([^"]+)">,<project xmlns="\3" xmlns:xsi="\2" xsi:schemaLocation="\1">,g
 	s,http://maven.apache.org/POM/4.0.0,https://maven.apache.org/POM/4.0.0,g
 	s,http://maven.apache.org/xsd/maven-4.0.0.xsd,https://maven.apache.org/xsd/maven-4.0.0.xsd,g
 	s/^(\s)+//g
+	# Javadoc generation uses different aria- attributes depending on the JDK's micro version
 	s/ ?aria-[^=]+="[^"]+"//g
+	# Javadoc generation uses different javascript depending on the JDK's micro version
 	s/(document\.getElementById|document\.querySelector)\([^)]+\)//g
+	# Some files may not have a newline at their end -- we don't care
 	$a\\
 	EOF
 	)
