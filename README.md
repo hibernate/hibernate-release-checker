@@ -24,29 +24,30 @@ Artifacts that have been checked by team members are listed in `CHECKED.md`.
 
 ## Usage
 
+IMPORTANT: This script expects `JAVA<number>_HOME` environment variables to be set to point to the path of JDK installations, e.g. `JAVA11_HOME`, `JAVA17_HOME`, ...
+
 To diff all artifacts published for a given version of Hibernate ORM:
 
 ```
-./check-orm.sh <java-home> <version>
+./check-orm.sh <version>
 ```
 
 To diff a single artifact published for a given version of Hibernate ORM:
 
 ```
-./check-orm.sh <java-home> <version> <artifact-path>
+./check-orm.sh <version> <artifact-path>
 ```
 
-* `<java-home>`: The path to a JDK. Must be the same major version, preferably even the same build, as the one used to build the published artifacts.
+To diff all artifacts published for a all version of Hibernate ORM published between April 2024 and October 2024:
+
+```
+./check-orm.sh 2024-04-to-10
+```
+
+Arguments:
+
 * `<version>`: The version of Hibernate ORM to rebuild and compare. Must include the `.Final` qualifier if relevant, e.g. `6.2.0.CR1` or `6.2.1.Final`.
 * `<artifact-path>`: The path of a single artifact to diff, relative to the root of the Maven repository. You can simply copy-paste paths reported by the all-artifact diff.
-
-To diff all artifacts of a selected subset of versions of Hibernate ORM:
-
-```
-./check-orm-all.sh
-```
-
-NOTE: This expects `JAVA<number>_HOME` environment variables to be set to point to the path of JDK installations, e.g. `JAVA11_HOME`, `JAVA17_HOME`, ...
 
 ## Examples
 

@@ -1,7 +1,14 @@
 #!/bin/bash -Eeu
 
+WORK_DIR_BASE=/tmp/hibernate-binary-check/orm
+
 log() {
 	echo 1>&2 "${@}"
+}
+
+abort() {
+	log "Aborting."
+	exit 1
 }
 
 usage() {
@@ -9,13 +16,16 @@ usage() {
 $0: Rebuilds Hibernate ORM for a specific tag and diffs the resulting binaries with published Maven artifacts.
 
 Usage:
-  To diff all artifacts published for a given version of Hibernate ORM:
-      $0 <java-home> <version>
-  To diff a single artifact published for a given version of Hibernate ORM:
-      $0 <java-home> <version> <artifact-path>
+  IMPORTANT: This script expects 'JAVA<number>_HOME' environment variables to be set to point to the path of JDK installations, e.g. 'JAVA11_HOME', 'JAVA17_HOME', ...
 
-  <java-home>:
-    The path to a JDK. Must be the same major version, preferably even the same build, as the one used to build the published artifacts.
+  To diff all artifacts published for a given version of Hibernate ORM:
+      $0 <version>
+  To diff a single artifact published for a given version of Hibernate ORM:
+      $0 <version> <artifact-path>
+  To diff all artifacts published for a all version of Hibernate ORM published between April 2024 and October 2024:
+      $0 2024-04-to-10
+
+Arguments:
   <version>:
     The version of Hibernate ORM to rebuild and compare. Must include the '.Final' qualifier if relevant, e.g. '6.2.0.CR1' or '6.2.1.Final'.
   <artifact-path>:
@@ -54,58 +64,84 @@ diff_patch() {
 	diff "${@}"
 }
 
-if (( $# < 2 )) || (( $# > 3 ))
-then
-	log "Wrong number of arguments"
-	usage
-	exit 1
-fi
+check_all_versions_from_arguments() {
+	mkdir -p "$WORK_DIR_BASE"
+	WORK_DIR="$(mktemp -p "$WORK_DIR_BASE" -d XXXXXX)"
 
-JHOME="$1"
-shift
-VERSION="$1"
-shift
-FILE_TO_DIFF=""
-DIFF_CMD="diff_silent"
-CHECK_FILE_BEFORE='log_clearable Checking'
-CHECK_FILE_AFTER='log_clear'
-CHECK_FILE_LOG_NOT_REPRODUCIBLE='true'
-if (( $# > 0 ))
-then
-	FILE_TO_DIFF="$1"
-	DIFF_CMD="diff_patch"
-	CHECK_FILE_BEFORE='true'
-	CHECK_FILE_AFTER='true'
-	CHECK_FILE_LOG_NOT_REPRODUCIBLE='log'
-	shift
-fi
+	log "Will check the following versions one by one:"
+	IFS=$'\n' log "${*}"
+	log
+	log "Output will be copied to files in $WORK_DIR"
+	log
+	read -p 'OK with that? [y/N] '
+  [ "$REPLY" = 'y' ] || abort
 
-TAG="${VERSION%.Final}"
-WORK_DIR="/tmp/hibernate-binary-check/orm/$VERSION"
-GIT_CLONE_DIR="$WORK_DIR/git-clone"
-REBUILT_MAVEN_REPO_DIR="$WORK_DIR/rebuilt-maven-repo"
-PUBLISHED_MAVEN_REPO_DIR="$WORK_DIR/published-maven-repo"
-MAVEN_REPO="https://repo1.maven.org/maven2"
-GRADLE_PLUGIN_REPO="https://plugins.gradle.org/m2"
+	while (( $# > 0 ))
+	do
+		{
+			# Use </dev/null to avoid gradlew consuming all stdin.
+			$0 "$1" </dev/null || log "Check failed."
+		} 2>&1 | tee "$WORK_DIR/$1.log"
+		log "Copied output to $WORK_DIR/$1.log"
+		shift
+	done
 
-rebuild() {
-	if ! [ -e "$GIT_CLONE_DIR" ]
-	then
-		git clone --depth 1 git@github.com:hibernate/hibernate-orm.git -b "$TAG" "$GIT_CLONE_DIR"
-	fi
-	rm -rf "$REBUILT_MAVEN_REPO_DIR"
-	mkdir -p "$REBUILT_MAVEN_REPO_DIR"
-	cd "$GIT_CLONE_DIR"
-	./gradlew publishToMavenLocal -x test --no-build-cache -Dmaven.repo.local="$REBUILT_MAVEN_REPO_DIR" -Dorg.gradle.java.home="$JHOME"
+	log "Copied output to files in $WORK_DIR"
 }
 
-CHECK_DONE=0
-ARTIFACT_COUNT=0
-FILE_COUNT=0
-FILE_DIFFERENT_COUNT=0
-FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT=0
+check_single_version_from_argument() {
+	VERSION=$1
+	shift
 
-check() {
+	if ! [[ "$VERSION" =~ ^[1-9][0-9]*\.[0-9]+\.[0-9]+\..*$ ]]
+	then
+		log "ERROR: Malformed or incomplete Hibernate ORM version: $VERSION."
+		abort
+	fi
+
+	log "Will check version $VERSION."
+	log
+
+	JHOME="$(java_home_for_version $VERSION)"
+
+	FILE_TO_DIFF=""
+	DIFF_CMD="diff_silent"
+	CHECK_FILE_BEFORE='log_clearable Checking'
+	CHECK_FILE_AFTER='log_clear'
+	CHECK_FILE_LOG_NOT_REPRODUCIBLE='true'
+	if (( $# > 0 ))
+	then
+		FILE_TO_DIFF="$1"
+		DIFF_CMD="diff_patch"
+		CHECK_FILE_BEFORE='true'
+		CHECK_FILE_AFTER='true'
+		CHECK_FILE_LOG_NOT_REPRODUCIBLE='log'
+		shift
+	fi
+
+	if (( $# > 1 ))
+	then
+		log "ERROR: Wrong number of arguments."
+		usage
+		abort
+	fi
+
+	TAG="${VERSION%.Final}"
+	WORK_DIR="$WORK_DIR_BASE/$VERSION"
+	GIT_CLONE_DIR="$WORK_DIR/git-clone"
+	REBUILT_MAVEN_REPO_DIR="$WORK_DIR/rebuilt-maven-repo"
+	PUBLISHED_MAVEN_REPO_DIR="$WORK_DIR/published-maven-repo"
+	MAVEN_REPO="https://repo1.maven.org/maven2"
+	GRADLE_PLUGIN_REPO="https://plugins.gradle.org/m2"
+
+	rebuild
+
+	CHECK_DONE=0
+	ARTIFACT_COUNT=0
+	FILE_COUNT=0
+	FILE_DIFFERENT_COUNT=0
+	FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT=0
+
 	mkdir -p "$PUBLISHED_MAVEN_REPO_DIR"
 	if [ -n "$FILE_TO_DIFF" ]
 	then
@@ -118,6 +154,44 @@ check() {
 		done
 	fi
 	CHECK_DONE=1
+}
+
+java_home_for_version() {
+	local java_version
+	if [[ "$1" =~ ^[12345]\..*$ ]]
+	then
+		log "ERROR: unsupported Hibernate ORM version: $1."
+		abort
+	elif [[ "$1" =~ ^6\..*$ ]] && ! [[ "$1" =~ ^6.6.[01].Final$ ]]
+	then
+		java_version=11
+	else
+		java_version=17
+	fi
+
+	local java_home_var_name
+	java_home_var_name="JAVA${java_version}_HOME"
+	if [ -z ${!java_home_var_name+x} ]
+	then
+		log "ERROR: Environment variable $java_home_var_name is not set; unable to find Java home for JDK $java_version, necessary to build Hibernate ORM version $1."
+		abort
+	fi
+	local java_home
+	echo "${!java_home_var_name}"
+}
+
+rebuild() {
+	if ! [ -e "$GIT_CLONE_DIR" ]
+	then
+		log "Cloning..."
+		git clone --depth 1 git@github.com:hibernate/hibernate-orm.git -b "$TAG" "$GIT_CLONE_DIR" 1>/dev/null
+	fi
+	rm -rf "$REBUILT_MAVEN_REPO_DIR"
+	mkdir -p "$REBUILT_MAVEN_REPO_DIR"
+	cd "$GIT_CLONE_DIR"
+
+	log "Building using Java Home: $JHOME"
+	./gradlew publishToMavenLocal -x test --no-build-cache -Dmaven.repo.local="$REBUILT_MAVEN_REPO_DIR" -Dorg.gradle.java.home="$JHOME"
 }
 
 on_exit() {
@@ -297,5 +371,50 @@ decompile() {
 	javap -v "$1"
 }
 
-rebuild
-check
+if (( $# < 1 ))
+then
+	log "ERROR: Wrong number of arguments."
+	usage
+	abort
+fi
+
+case "$1" in
+	"2024-04-to-10")
+		log "Interpreting '$1' as a set of versions to test: all versions published between April and October 2024."
+		log
+		check_all_versions_from_arguments \
+			6.2.25.Final \
+			6.2.26.Final \
+			6.2.27.Final \
+			6.2.28.Final \
+			6.2.29.Final \
+			6.2.30.Final \
+			6.2.31.Final \
+			6.2.32.Final \
+			6.4.5.Final \
+			6.4.6.Final \
+			6.4.7.Final \
+			6.4.8.Final \
+			6.4.9.Final \
+			6.4.10.Final \
+			6.5.0.CR2 \
+			6.5.0.Final \
+			6.5.1.Final \
+			6.5.2.Final \
+			6.5.3.Final \
+			6.6.0.Alpha1 \
+			6.6.0.CR1 \
+			6.6.0.CR2 \
+			6.6.0.Final \
+			6.6.1.Final \
+			7.0.0.Alpha2 \
+			7.0.0.Alpha3 \
+			7.0.0.Beta1
+		exit 0
+		;;
+	*)
+		log "Interpreting '$1' as a single version to test."
+		log
+		check_single_version_from_argument "${@}"
+		;;
+esac
