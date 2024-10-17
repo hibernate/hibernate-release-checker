@@ -209,10 +209,10 @@ apply_build_fix_commits() {
 	# https://github.com/hibernate/hibernate-orm/commit/1da18451ce9adf40c5939d050b6914cb7529e6eb
 	# https://github.com/hibernate/hibernate-orm/commit/e4a0b6988f84e85e427484e65321e9583080ccb5
 	# https://github.com/hibernate/hibernate-orm/commit/420faa7e4ac8a5065ed42f8338883193c944ff76
-	if [[ "$VERSION" =~ ^6\.6\.0\.\(Alpha\|Beta\|CR1\) ]]
+	if [[ "$VERSION" =~ ^7\.0\.0\.Alpha ]] || [[ "$VERSION" =~ ^6\.6\.0\.(Alpha|Beta|CR1) ]]
 	then
 		fix_commits=("1da18451ce9adf40c5939d050b6914cb7529e6eb" "e4a0b6988f84e85e427484e65321e9583080ccb5" "420faa7e4ac8a5065ed42f8338883193c944ff76")
-	elif [[ "$VERSION" =~ ^6\.5\.[0-9]\..* ]]
+	elif [[ "$VERSION" =~ ^6\.5\.[0-2]\..* ]]
 	then
 		fix_commits=("26f20caa6370bbf7077927823324dc674dba9387" "b2edca91dcc0a925bbd10b7d327871f5b81e2eea" "ea6dfd764f4d65d65e144e625fac579a2905f1fb")
 	elif [[ "$VERSION" =~ ^6\.4\.[0-9]\. ]] || [[ "$VERSION" =~ ^6\.3\. ]]
