@@ -5,6 +5,7 @@ When you've checked a version, please add a new subsection here and copy-paste t
 ## Not checked yet
 
 ```
+6.5.0.CR2 (Examined 0 artifacts???)
 6.5.3.Final
 6.6.0.Alpha1
 6.6.0.CR1
