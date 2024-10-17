@@ -257,7 +257,10 @@ $($JHOME/bin/java -version 2>&1 | sed "s/^/    /g")
 
 Examined $ARTIFACT_COUNT artifacts.
 Examined $FILE_COUNT files (identical files within JARs are not counted).
-Ignored $FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT files containing differences, but that are known not to be reproducible.
+
+Ignored $FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
 
 $(tput bold)Found $FILE_DIFFERENT_COUNT files containing significant differences.$(tput sgr0)
 $((( CHECK_DONE != 1 )) && echo -e "\nWARNING: This check was terminated unexpectedly, this report is incomplete.")
