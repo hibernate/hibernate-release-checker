@@ -64,25 +64,28 @@ diff_patch() {
 	diff "${@}"
 }
 
-check_all_versions_from_arguments() {
+check_all_versions_from_file() {
 	mkdir -p "$WORK_DIR_BASE"
 	WORK_DIR="$(mktemp -p "$WORK_DIR_BASE" -d XXXXXX)"
 
+	local versions
+	mapfile -t versions < "$1"
+
 	log "Will check the following versions one by one:"
-	IFS=$'\n' log "${*}"
+	IFS=$'\n' log "${versions[@]}"
 	log
 	log "Output will be copied to files in $WORK_DIR"
 	log
 	read -p 'OK with that? [y/N] '
   [ "$REPLY" = 'y' ] || abort
 
-	while (( $# > 0 ))
+	for version in "${versions[@]}"
 	do
 		{
 			# Use </dev/null to avoid gradlew consuming all stdin.
-			$0 "$1" </dev/null || log "Check failed."
-		} 2>&1 | tee "$WORK_DIR/$1.log"
-		log "Copied output to $WORK_DIR/$1.log"
+			$0 "$version" </dev/null || log "Check failed."
+		} 2>&1 | tee "$WORK_DIR/$version.log"
+		log "Copied output to $WORK_DIR/$version.log"
 		shift
 	done
 
@@ -97,12 +100,6 @@ check_all_versions_from_arguments() {
 check_single_version_from_argument() {
 	VERSION=$1
 	shift
-
-	if ! [[ "$VERSION" =~ ^[1-9][0-9]*\.[0-9]+\.[0-9]+\..*$ ]]
-	then
-		log "ERROR: Malformed or incomplete Hibernate ORM version: $VERSION."
-		abort
-	fi
 
 	log "Will check version $VERSION."
 	log
@@ -446,42 +443,20 @@ then
 	abort
 fi
 
-case "$1" in
-	"2024-04-to-10")
-		log "Interpreting '$1' as a set of versions to test: all versions published between April and October 2024."
-		log
-		check_all_versions_from_arguments \
-			6.2.25.Final \
-			6.2.26.Final \
-			6.2.27.Final \
-			6.2.28.Final \
-			6.2.30.Final \
-			6.2.31.Final \
-			6.2.32.Final \
-			6.4.5.Final \
-			6.4.6.Final \
-			6.4.7.Final \
-			6.4.8.Final \
-			6.4.9.Final \
-			6.4.10.Final \
-			6.5.0.CR2 \
-			6.5.0.Final \
-			6.5.1.Final \
-			6.5.2.Final \
-			6.5.3.Final \
-			6.6.0.Alpha1 \
-			6.6.0.CR1 \
-			6.6.0.CR2 \
-			6.6.0.Final \
-			6.6.1.Final \
-			7.0.0.Alpha2 \
-			7.0.0.Alpha3 \
-			7.0.0.Beta1
-		exit 0
-		;;
-	*)
-		log "Interpreting '$1' as a single version to test."
-		log
-		check_single_version_from_argument "${@}"
-		;;
-esac
+SCRIPT_DIR="$(readlink -f ${BASH_SOURCE[0]} | xargs dirname)"
+LIST_PATH="$SCRIPT_DIR/$1.txt"
+
+if [ -f "$LIST_PATH" ]
+then
+	log "Interpreting '$1' as a set of versions to test, listed in $LIST_PATH."
+	log
+	check_all_versions_from_file "$LIST_PATH"
+elif [[ "$1" =~ ^[1-9][0-9]*\.[0-9]+\.[0-9]+\..*$ ]]
+then
+	log "Interpreting '$1' as a single version to test."
+	log
+	check_single_version_from_argument "${@}"
+else
+	log "ERROR: $1 is not a file, nor a correctly formed, complete Hibernate ORM version."
+	abort
+fi
