@@ -285,6 +285,7 @@ check_artifact() {
 	fi
 
 	# For JARs, inspect content
+	FILE_COUNT=$(( FILE_COUNT + 1 ))
 	local name_without_jar
 	name_without_jar="${name%.jar}"
 
