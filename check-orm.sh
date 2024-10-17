@@ -167,7 +167,7 @@ java_home_for_version() {
 	then
 		log "ERROR: unsupported Hibernate ORM version: $1."
 		abort
-	elif [[ "$1" =~ ^6\..*$ ]] && ! [[ "$1" =~ ^6.6.[01].Final$ ]]
+	elif [[ "$1" =~ ^6\..*$ ]] && ! [[ "$1" =~ ^6.6.0.Final$ ]]
 	then
 		java_version=11
 	else
