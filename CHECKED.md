@@ -5,8 +5,6 @@ When you've checked a version, please add a new subsection here and copy-paste t
 ## Not checked yet
 
 ```
-7.0.0.Alpha2
-7.0.0.Alpha3
 7.0.0.Beta1
 ```
 
@@ -493,3 +491,44 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
+## Hibernate ORM `7.0.0.Alpha2`
+
+```
+Finished checking version 7.0.0.Alpha2 on 2024-10-18T15:59+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "17.0.12" 2024-07-16
+    OpenJDK Runtime Environment Temurin-17.0.12+7 (build 17.0.12+7)
+    OpenJDK 64-Bit Server VM Temurin-17.0.12+7 (build 17.0.12+7, mixed mode, sharing)
+
+Examined 100 artifacts.
+Examined 9148 files (identical files within JARs are not counted).
+
+Ignored 26 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
+
+## Hibernate ORM `7.0.0.Alpha3`
+
+```
+Finished checking version 7.0.0.Alpha3 on 2024-10-18T16:06+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "17.0.12" 2024-07-16
+    OpenJDK Runtime Environment Temurin-17.0.12+7 (build 17.0.12+7)
+    OpenJDK 64-Bit Server VM Temurin-17.0.12+7 (build 17.0.12+7, mixed mode, sharing)
+
+Examined 100 artifacts.
+Examined 12764 files (identical files within JARs are not counted).
+
+Ignored 20 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
