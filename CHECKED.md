@@ -5,8 +5,6 @@ When you've checked a version, please add a new subsection here and copy-paste t
 ## Not checked yet
 
 ```
-6.6.0.Alpha1
-6.6.0.CR1
 7.0.0.Alpha2
 7.0.0.Alpha3
 7.0.0.Beta1
@@ -384,6 +382,48 @@ Examined 100 artifacts.
 Examined 288 files (identical files within JARs are not counted).
 
 Ignored 164 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
+
+## Hibernate ORM `6.6.0.Alpha1`
+
+```
+Finished checking version 6.6.0.Alpha1 on 2024-10-18T15:46+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.24" 2024-07-16
+    OpenJDK Runtime Environment Temurin-11.0.24+8 (build 11.0.24+8)
+    OpenJDK 64-Bit Server VM Temurin-11.0.24+8 (build 11.0.24+8, mixed mode)
+
+Examined 100 artifacts.
+Examined 282 files (identical files within JARs are not counted).
+
+Ignored 158 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
+
+## Hibernate ORM `6.6.0.CR1`
+
+```
+Finished checking version 6.6.0.CR1 on 2024-10-18T15:50+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.24" 2024-07-16
+    OpenJDK Runtime Environment Temurin-11.0.24+8 (build 11.0.24+8)
+    OpenJDK 64-Bit Server VM Temurin-11.0.24+8 (build 11.0.24+8, mixed mode)
+
+Examined 100 artifacts.
+Examined 280 files (identical files within JARs are not counted).
+
+Ignored 152 files containing differences,
 but that are known not to be reproducible: require a specific OpenJDK micro version,
 unpredictable order of content that doesn't change semantics, ...
 
