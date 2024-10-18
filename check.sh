@@ -83,7 +83,7 @@ check_all_versions_from_file() {
 	do
 		{
 			# Use </dev/null to avoid gradlew consuming all stdin.
-			$0 "$version" </dev/null || log "Check failed."
+			$0 "$PROJECT" "$version" </dev/null || log "Check failed."
 		} 2>&1 | tee "$WORK_DIR/$version.log"
 		log "Copied output to $WORK_DIR/$version.log"
 		shift
