@@ -238,7 +238,7 @@ unpredictable order of content that doesn't change semantics, ...
 $(tput bold)Found $FILE_DIFFERENT_COUNT files containing significant differences.$(tput sgr0)
 $((( CHECK_DONE != 1 )) && echo -e "\nWARNING: This check was terminated unexpectedly, this report is incomplete.")
 ================================================================================
-Run $0 $VERSION <artifact-path> to show the diff for a particular artifact."
+Run $0 $PROJECT $VERSION <artifact-path> to show the diff for a particular artifact."
 }
 
 check_artifact() {
