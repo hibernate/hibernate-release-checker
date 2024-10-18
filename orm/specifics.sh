@@ -5,7 +5,7 @@ java_version_for_version() {
 	then
 		log "ERROR: unsupported Hibernate ORM version: $VERSION."
 		abort
-	elif [[ "$VERSION" =~ ^6\..*$ ]] && ! [[ "$1" =~ ^6.6.0.Final$ ]]
+	elif [[ "$VERSION" =~ ^6\..*$ ]] && ! [[ "$VERSION" =~ ^6.6.0.Final$ ]]
 	then
 		echo 11
 	else
