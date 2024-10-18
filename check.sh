@@ -1,7 +1,5 @@
 #!/bin/bash -Eeu
 
-WORK_DIR_BASE=/tmp/hibernate-binary-check/orm
-
 log() {
 	echo 1>&2 "${@}"
 }
@@ -13,21 +11,23 @@ abort() {
 
 usage() {
 	log "
-$0: Rebuilds Hibernate ORM for a specific tag and diffs the resulting binaries with published Maven artifacts.
+$0: Rebuilds a Hibernate project for a specific tag and diffs the resulting binaries with published Maven artifacts.
 
 Usage:
   IMPORTANT: This script expects 'JAVA<number>_HOME' environment variables to be set to point to the path of JDK installations, e.g. 'JAVA11_HOME', 'JAVA17_HOME', ...
 
-  To diff all artifacts published for a given version of Hibernate ORM:
-      $0 <version>
-  To diff a single artifact published for a given version of Hibernate ORM:
-      $0 <version> <artifact-path>
+  To diff all artifacts published for a given version of a Hibernate project:
+      $0 <project> <version>
+  To diff a single artifact published for a given version of a Hibernate project:
+      $0 <project> <version> <artifact-path>
   To diff all artifacts published for a all version of Hibernate ORM published between April 2024 and October 2024:
-      $0 2024-04-to-10
+      $0 orm 2024-04-to-10
 
 Arguments:
+  <project>:
+    The name of a Hibernate project, case sensitive. Currently accepts 'orm' or 'hcann'.
   <version>:
-    The version of Hibernate ORM to rebuild and compare. Must include the '.Final' qualifier if relevant, e.g. '6.2.0.CR1' or '6.2.1.Final'.
+    The version of the Hibernate project to rebuild and compare. Must include the '.Final' qualifier if relevant, e.g. '6.2.0.CR1' or '6.2.1.Final'.
   <artifact-path>:
     The path of a single artifact to diff, relative to the root of the Maven repository. You can simply copy-paste paths reported by the all-artifact diff.
 "
@@ -128,7 +128,14 @@ check_single_version_from_argument() {
 		abort
 	fi
 
-	TAG="${VERSION%.Final}"
+	case "$PROJECT" in
+		"orm")
+			TAG="${VERSION%.Final}"
+			;;
+		*)
+			TAG="$VERSION"
+			;;
+	esac
 	WORK_DIR="$WORK_DIR_BASE/$VERSION"
 	GIT_CLONE_DIR="$WORK_DIR/git-clone"
 	REBUILT_MAVEN_REPO_DIR="$WORK_DIR/rebuilt-maven-repo"
@@ -159,23 +166,12 @@ check_single_version_from_argument() {
 }
 
 java_home_for_version() {
-	local java_version
-	if [[ "$1" =~ ^[12345]\..*$ ]]
-	then
-		log "ERROR: unsupported Hibernate ORM version: $1."
-		abort
-	elif [[ "$1" =~ ^6\..*$ ]] && ! [[ "$1" =~ ^6.6.0.Final$ ]]
-	then
-		java_version=11
-	else
-		java_version=17
-	fi
-
+	local java_version="$(java_version_for_version)"
 	local java_home_var_name
 	java_home_var_name="JAVA${java_version}_HOME"
 	if [ -z ${!java_home_var_name+x} ]
 	then
-		log "ERROR: Environment variable $java_home_var_name is not set; unable to find Java home for JDK $java_version, necessary to build Hibernate ORM version $1."
+		log "ERROR: Environment variable $java_home_var_name is not set; unable to find Java home for JDK $java_version, necessary to build Hibernate $PROJECT version $1."
 		abort
 	fi
 	local java_home
@@ -186,7 +182,7 @@ rebuild() {
 	if ! [ -e "$GIT_CLONE_DIR" ]
 	then
 		log "Cloning..."
-		git clone --depth 1 git@github.com:hibernate/hibernate-orm.git -b "$TAG" "$GIT_CLONE_DIR" 1>/dev/null
+		git clone --depth 1 $GIT_REMOTE -b "$TAG" "$GIT_CLONE_DIR" 1>/dev/null
 	fi
 	cd "$GIT_CLONE_DIR"
 
@@ -200,28 +196,8 @@ rebuild() {
 }
 
 apply_build_fix_commits() {
-	local fix_commits=()
-	# A few commits to fix builds that no longer work due to e.g. changes in Maven repositories.
-	# See:
-	# https://github.com/hibernate/hibernate-orm/commit/1da18451ce9adf40c5939d050b6914cb7529e6eb
-	# https://github.com/hibernate/hibernate-orm/commit/e4a0b6988f84e85e427484e65321e9583080ccb5
-	# https://github.com/hibernate/hibernate-orm/commit/420faa7e4ac8a5065ed42f8338883193c944ff76
-	if [[ "$VERSION" =~ ^7\.0\.0\.Alpha ]] || [[ "$VERSION" =~ ^6\.6\.0\.(Alpha|Beta|CR1) ]]
-	then
-		fix_commits=("1da18451ce9adf40c5939d050b6914cb7529e6eb" "e4a0b6988f84e85e427484e65321e9583080ccb5" "420faa7e4ac8a5065ed42f8338883193c944ff76")
-	elif [[ "$VERSION" =~ ^6\.5\.[0-2]\..* ]]
-	then
-		fix_commits=("26f20caa6370bbf7077927823324dc674dba9387" "b2edca91dcc0a925bbd10b7d327871f5b81e2eea" "ea6dfd764f4d65d65e144e625fac579a2905f1fb")
-	elif [[ "$VERSION" =~ ^6\.4\.[0-9]\. ]] || [[ "$VERSION" =~ ^6\.3\. ]]
-	then
-		fix_commits=("f67acfcd65e4d78f2c0a91e883250c381478729c" "6f3258a97f4f7b7bd6e0e8f1fda4337ff74b6c98" "7ef269100b7bce5a2dab9f8c3097fd51d5cb56c4")
-	elif [[ "$VERSION" =~ ^6\.2\.[012][0-9]?\. ]]
-	then
-		fix_commits=("97e6f458192855692f2953020988da8fd3f844f7" "f810f648f9816ded3ae9e17a3ccf7f7c175b1cb7" "7ef269100b7bce5a2dab9f8c3097fd51d5cb56c4")
-	else
-		# Nothing to do
-		return 0
-	fi
+	local fix_commits
+	fix_commits=($(fix_commits_for_version))
 	local commits_to_apply=()
 	for commit in ${fix_commits[@]}
 	do
@@ -340,25 +316,6 @@ check_file() {
 	fi
 }
 
-is_known_not_reproducible() {
-	echo "$1" | grep -q -E -f <(cat <<-'EOF'
-	# These JAXB classes are generated, but the order of fields/getters/setters is semi-random (generator uses a HashSet)
-	hibernate-core-[^-]+.jar: org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.class
-	hibernate-core-[^-]+-sources.jar: (hbm/)?org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.java
-	hibernate-core-[^-]+-javadoc.jar: org/hibernate/boot/jaxb/hbm/spi/JaxbHbm((Id)?BagCollection|List|Map|Set)Type\.html
-	# Just about any change can lead to difference in javadoc search indexes
-	-javadoc.jar: (member|package|type)-search-index.zip
-	# The gradle plugin metadata is wrong, because we're using a hack to get it published using publishToMavenLocal
-	# (it's normally published using a different task that is specific to Gradle plugins)
-	org/hibernate/orm/hibernate-gradle-plugin/[^/]+/hibernate-gradle-plugin-[^\-]+\.(pom|module)
-	# The JQuery version included in javadoc changes in *micro* versions of the JDK.
-	# See for example https://bugs.openjdk.org/browse/JDK-8291029
-	-javadoc.jar: legal/jqueryUI.md
-	-javadoc.jar: jquery/jquery-ui.min.(js|css)
-	EOF
-	)
-}
-
 extract_jar() {
 	log_clearable "Extracting" "$1"
 	rm -rf "$2"
@@ -402,27 +359,6 @@ replace_timestamps() {
 	sed -E 's/20[[:digit:]]{2}-[[:digit:]]{1,2}-[[:digit:]]{1,2}([ T][[:digit:]]{2}:[[:digit:]]{2}(:[[:digit:]]{2})?)?/SOME_DATE/g'
 }
 
-replace_common_text_differences() {
-	replace_timestamps | sed -E -f <(cat <<-'EOF'
-	# Generated XML files, in particular for gradle-plugin, may differ -- probably some missing post-processing
-	/<\?xml version="1\.0" encoding="UTF-8"\?>/d
-	s,<project xsi:schemaLocation="([^"]+)" xmlns:xsi="([^"]+)" xmlns="([^"]+)">,<project xmlns="\3" xmlns:xsi="\2" xsi:schemaLocation="\1">,g
-	s,http://maven.apache.org/POM/4.0.0,https://maven.apache.org/POM/4.0.0,g
-	s,http://maven.apache.org/xsd/maven-4.0.0.xsd,https://maven.apache.org/xsd/maven-4.0.0.xsd,g
-	s/^(\s)+//g
-	# Javadoc generation uses different aria- attributes depending on the JDK's micro version
-	s/ ?aria-[^=]+="[^"]+"//g
-	# Javadoc generation uses different javascript depending on the JDK's micro version
-	s/(document\.getElementById|document\.querySelector)\([^)]+\)//g
-	# Some files may not have a newline at their end -- we don't care
-	$a\\
-	# Links with anchors may not be generated correctly in the rebuild for some reason
-	s,<a href="[^"#]*#[^"]+">,,g
-	s,</a>,,g
-	EOF
-	)
-}
-
 decompile() {
 	if ! [ -e "$1" ]
 	then
@@ -436,7 +372,7 @@ decompile() {
 	javap -v "$1" | grep -Ev '^Classfile .*\.class$|^  SHA-256 checksum|^  MD5 checksum|^  Last modified'
 }
 
-if (( $# < 1 ))
+if (( $# < 2 ))
 then
 	log "ERROR: Wrong number of arguments."
 	usage
@@ -444,8 +380,20 @@ then
 fi
 
 SCRIPT_DIR="$(readlink -f ${BASH_SOURCE[0]} | xargs dirname)"
-LIST_PATH="$SCRIPT_DIR/$1.txt"
 
+PROJECT="$1"
+shift
+SPECIFICS_PATH="$SCRIPT_DIR/$PROJECT/specifics.sh"
+if ! [ -f "$SPECIFICS_PATH" ]
+then
+	log "ERROR: unsupported Hibernate project: $PROJECT."
+	abort
+fi
+source "$SPECIFICS_PATH"
+
+WORK_DIR_BASE="/tmp/hibernate-binary-check/$PROJECT"
+
+LIST_PATH="$SCRIPT_DIR/$PROJECT/$1.txt"
 if [ -f "$LIST_PATH" ]
 then
 	log "Interpreting '$1' as a set of versions to test, listed in $LIST_PATH."
@@ -457,6 +405,6 @@ then
 	log
 	check_single_version_from_argument "${@}"
 else
-	log "ERROR: $1 is not a file, nor a correctly formed, complete Hibernate ORM version."
+	log "ERROR: $1 is not a file, nor a correctly formed, complete Hibernate $PROJECT version."
 	abort
 fi
