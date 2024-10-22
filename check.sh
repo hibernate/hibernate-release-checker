@@ -281,7 +281,7 @@ check_artifact() {
 download_published() {
 	mkdir -p "$(dirname "$2")"
 	local repo
-	if [[ "$1" =~ gradle.plugin ]]
+	if [[ "$1" =~ gradle.plugin ]] || [[ "$1" =~ "/gradle/" ]]
 	then
 		repo="$GRADLE_PLUGIN_REPO"
 	else
@@ -400,6 +400,11 @@ then
 	log
 	check_all_versions_from_file "$LIST_PATH"
 elif [[ "$1" =~ ^[1-9][0-9]*\.[0-9]+\.[0-9]+\..*$ ]]
+then
+	log "Interpreting '$1' as a single version to test."
+	log
+	check_single_version_from_argument "${@}"
+elif [[ $PROJECT = "xjc" ]] || [[ "$1" =~ ^[1-9][0-9]*\.[0-9]+\.[0-9]+$ ]]
 then
 	log "Interpreting '$1' as a single version to test."
 	log
