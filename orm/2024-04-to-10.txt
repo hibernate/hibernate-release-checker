@@ -2,6 +2,7 @@
 6.2.26.Final
 6.2.27.Final
 6.2.28.Final
+6.2.29.Final
 6.2.30.Final
 6.2.31.Final
 6.2.32.Final
@@ -21,6 +22,7 @@
 6.6.0.CR2
 6.6.0.Final
 6.6.1.Final
+7.0.0.Alpha1
 7.0.0.Alpha2
 7.0.0.Alpha3
 7.0.0.Beta1

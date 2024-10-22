@@ -86,6 +86,27 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
+## Hibernate ORM `6.2.29.Final`
+
+```
+Finished checking version 6.2.29.Final on 2024-10-22T14:22+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.24" 2024-07-16
+    OpenJDK Runtime Environment Temurin-11.0.24+8 (build 11.0.24+8)
+    OpenJDK 64-Bit Server VM Temurin-11.0.24+8 (build 11.0.24+8, mixed mode)
+
+Examined 85 artifacts.
+Examined 253 files (identical files within JARs are not counted).
+
+Ignored 154 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
+
 ## Hibernate ORM `6.2.30.Final`
 
 ```
@@ -479,6 +500,27 @@ Examined 100 artifacts.
 Examined 274 files (identical files within JARs are not counted).
 
 Ignored 146 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
+
+## Hibernate ORM `7.0.0.Alpha1`
+
+```
+Finished checking version 7.0.0.Alpha1 on 2024-10-22T14:03+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "17.0.12" 2024-07-16
+    OpenJDK Runtime Environment Temurin-17.0.12+7 (build 17.0.12+7)
+    OpenJDK 64-Bit Server VM Temurin-17.0.12+7 (build 17.0.12+7, mixed mode, sharing)
+
+Examined 0 artifacts.
+Examined 0 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
 but that are known not to be reproducible: require a specific OpenJDK micro version,
 unpredictable order of content that doesn't change semantics, ...
 

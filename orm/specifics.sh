@@ -1,5 +1,17 @@
 GIT_REMOTE=git@github.com:hibernate/hibernate-orm.git
 
+git_ref_for_version() {
+	if [[ "$VERSION" == '6.2.29.Final' ]]
+	then
+	  # 6.2.29.Final was botched and re-released as 6.2.30.
+	  # Just use this commit to re-build 6.2.29.Final,
+	  # it's close enough and will lead to the same binaries.
+		echo '6.2.30'
+	else
+	  echo "${VERSION%.Final}"
+	fi
+}
+
 java_version_for_version() {
 	if [[ "$VERSION" =~ ^[12345]\..*$ ]]
 	then
@@ -10,6 +22,18 @@ java_version_for_version() {
 		echo 11
 	else
 		echo 17
+	fi
+}
+
+fix_for_version() {
+	if [[ "$VERSION" == '6.2.29.Final' ]]
+	then
+	  # 6.2.29.Final was botched and re-released as 6.2.30.
+	  # We don't have the commit that sets the version,
+	  # so we must set it manually.
+    echo "hibernateVersion=$VERSION" > ./gradle/version.properties
+  else
+    return 0
 	fi
 }
 
@@ -28,7 +52,7 @@ fix_commits_for_version() {
 	elif [[ "$VERSION" =~ ^6\.4\.[0-9]\. ]] || [[ "$VERSION" =~ ^6\.3\. ]]
 	then
 		echo "f67acfcd65e4d78f2c0a91e883250c381478729c" "6f3258a97f4f7b7bd6e0e8f1fda4337ff74b6c98" "7ef269100b7bce5a2dab9f8c3097fd51d5cb56c4"
-	elif [[ "$VERSION" =~ ^6\.2\.[012][0-9]?\. ]]
+	elif [[ "$VERSION" =~ ^6\.2\.[01][0-9]?\. ]] || [[ "$VERSION" =~ ^6\.2\.2[0-8]\. ]]
 	then
 		echo "97e6f458192855692f2953020988da8fd3f844f7" "f810f648f9816ded3ae9e17a3ccf7f7c175b1cb7" "7ef269100b7bce5a2dab9f8c3097fd51d5cb56c4"
 	else

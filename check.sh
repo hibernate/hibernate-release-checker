@@ -11,7 +11,7 @@ abort() {
 
 usage() {
 	log "
-$0: Rebuilds a Hibernate project for a specific tag and diffs the resulting binaries with published Maven artifacts.
+$0: Rebuilds a Hibernate project for a specific version and diffs the resulting binaries with published Maven artifacts.
 
 Usage:
   IMPORTANT: This script expects 'JAVA<number>_HOME' environment variables to be set to point to the path of JDK installations, e.g. 'JAVA11_HOME', 'JAVA17_HOME', ...
@@ -128,14 +128,7 @@ check_single_version_from_argument() {
 		abort
 	fi
 
-	case "$PROJECT" in
-		"orm")
-			TAG="${VERSION%.Final}"
-			;;
-		*)
-			TAG="$VERSION"
-			;;
-	esac
+  GIT_REF="$(git_ref_for_version)"
 	WORK_DIR="$WORK_DIR_BASE/$VERSION"
 	GIT_CLONE_DIR="$WORK_DIR/git-clone"
 	REBUILT_MAVEN_REPO_DIR="$WORK_DIR/rebuilt-maven-repo"
@@ -182,11 +175,11 @@ rebuild() {
 	if ! [ -e "$GIT_CLONE_DIR" ]
 	then
 		log "Cloning..."
-		git clone --depth 1 $GIT_REMOTE -b "$TAG" "$GIT_CLONE_DIR" 1>/dev/null
+		git clone --depth 1 $GIT_REMOTE -b "$GIT_REF" "$GIT_CLONE_DIR" 1>/dev/null
 	fi
 	cd "$GIT_CLONE_DIR"
 
-	apply_build_fix_commits
+	apply_build_fixes
 
 	rm -rf "$REBUILT_MAVEN_REPO_DIR"
 	mkdir -p "$REBUILT_MAVEN_REPO_DIR"
@@ -195,7 +188,7 @@ rebuild() {
 	./gradlew publishToMavenLocal -x test --no-build-cache -Dmaven.repo.local="$REBUILT_MAVEN_REPO_DIR" -Dorg.gradle.java.home="$JHOME"
 }
 
-apply_build_fix_commits() {
+apply_build_fixes() {
 	local fix_commits
 	fix_commits=($(fix_commits_for_version))
 	local commits_to_apply=()
@@ -207,14 +200,15 @@ apply_build_fix_commits() {
 			commits_to_apply+=( "$commit" )
 		fi
 	done
-	if (( ${#commits_to_apply[@]} == 0 ))
+	if (( ${#commits_to_apply[@]} != 0 ))
 	then
-		return
+		log "Fetching additional commits to fix the build..."
+		git fetch origin "${commits_to_apply[@]}"
+		log "Applying additional commits to fix the build..."
+		git cherry-pick -x --empty=drop "${commits_to_apply[@]}"
 	fi
-	log "Fetching additional commits to fix the build..."
-	git fetch origin "${commits_to_apply[@]}"
-	log "Applying additional commits to fix the build..."
-	git cherry-pick -x --empty=drop "${commits_to_apply[@]}"
+
+	fix_for_version
 }
 
 on_exit() {

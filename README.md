@@ -2,7 +2,7 @@
 
 ## Description
 
-Script that rebuilds Hibernate projects for a specific tag and diffs the resulting binaries with published Maven artifacts.
+Script that rebuilds Hibernate projects for a specific version and diffs the resulting binaries with published Maven artifacts.
 
 Since older versions of Hibernate projects (ORM before https://github.com/hibernate/hibernate-orm/pull/8790, and perhaps other PRs) do not have a reproducible build, the script is more forgiving than a simple bit-by-bit comparison:
 

@@ -1,5 +1,9 @@
 GIT_REMOTE=git@github.com:hibernate/hibernate-commons-annotations.git
 
+git_ref_for_version() {
+  echo "${VERSION}"
+}
+
 java_version_for_version() {
 	if [[ "$VERSION" =~ ^[12345]\..*$ ]]
 	then
@@ -11,6 +15,10 @@ java_version_for_version() {
 	else
 		echo 11
 	fi
+}
+
+fix_for_version() {
+  return 0
 }
 
 fix_commits_for_version() {

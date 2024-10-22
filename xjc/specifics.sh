@@ -1,7 +1,15 @@
 GIT_REMOTE=https://github.com/beikov/xjc-plugin-jakarta.git
 
+git_ref_for_version() {
+  echo "${VERSION}"
+}
+
 java_version_for_version() {
 	echo 17
+}
+
+fix_for_version() {
+  return 0
 }
 
 fix_commits_for_version() {
