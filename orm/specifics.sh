@@ -61,6 +61,19 @@ fix_commits_for_version() {
 	fi
 }
 
+gradle_options_for_docs() {
+	if [[ "$VERSION" =~ ^6\.[2345]\. ]]
+	then
+		echo "buildDocs -x renderGettingStartedGuidePdf -x renderIntroductionPdf -x renderQueryLanguageGuidePdf"
+	else
+		echo "buildDocs -x renderGettingStartedGuidePdf -x renderIntroductionPdf -x renderQueryLanguageGuidePdf -x renderRepositoriesPdf"
+	fi
+}
+
+docs_relative_path() {
+	echo 'documentation/target/asciidoc'
+}
+
 is_known_not_reproducible() {
 	echo "$1" | grep -q -E -f <(cat <<-'EOF'
 	# These JAXB classes are generated, but the order of fields/getters/setters is semi-random (generator uses a HashSet)

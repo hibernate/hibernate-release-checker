@@ -11,7 +11,7 @@ abort() {
 
 usage() {
 	log "
-$0: Rebuilds a Hibernate project for a specific version and diffs the resulting binaries with published Maven artifacts.
+$0: Rebuilds a Hibernate project for a specific version and diffs the resulting binaries with published Maven artifacts and/or documentation.
 
 Usage:
   IMPORTANT: This script expects 'JAVA<number>_HOME' environment variables to be set to point to the path of JDK installations, e.g. 'JAVA11_HOME', 'JAVA17_HOME', ...
@@ -20,8 +20,12 @@ Usage:
       $0 <project> <version>
   To diff a single artifact published for a given version of a Hibernate project:
       $0 <project> <version> <artifact-path>
-  To diff all artifacts published for a all version of Hibernate ORM published between April 2024 and October 2024:
+  To diff all artifacts published for all version of Hibernate ORM published between April 2024 and October 2024:
       $0 orm 2024-04-to-10
+  To diff documentation published to docs.jboss.org for a given version of a given Hibernate project, without checking Maven artifacts:
+      $0 -dM <project> <version>
+  To diff documentation published to docs.jboss.org for all versions of Hibernate ORM published between April 2024 and October 2024:
+      $0 -dM orm 2024-04-to-10-latest
 
 Arguments:
   <project>:
@@ -30,6 +34,17 @@ Arguments:
     The version of the Hibernate project to rebuild and compare. Must include the '.Final' qualifier if relevant, e.g. '6.2.0.CR1' or '6.2.1.Final'.
   <artifact-path>:
     The path of a single artifact to diff, relative to the root of the Maven repository. You can simply copy-paste paths reported by the all-artifact diff.
+
+Options:
+
+  -m:
+    Check Maven artifacts (the default).
+  -M:
+    Do not check Maven artifacts.
+  -d:
+    Check documentation on docs.jboss.org.
+  -D:
+    Do not check documentation on docs.jboss.org (the default).
 "
 }
 
@@ -83,7 +98,7 @@ check_all_versions_from_file() {
 	do
 		{
 			# Use </dev/null to avoid gradlew consuming all stdin.
-			$0 "$PROJECT" "$version" </dev/null || log "Check failed."
+			$0 "${ARGS_TO_FORWARD[@]}" "$version" </dev/null || log "Check failed."
 		} 2>&1 | tee "$WORK_DIR/$version.log"
 		log "Copied output to $WORK_DIR/$version.log"
 		shift
@@ -106,12 +121,14 @@ check_single_version_from_argument() {
 
 	JHOME="$(java_home_for_version $VERSION)"
 
-	FILE_TO_DIFF=""
-	DIFF_CMD="diff_silent"
-	CHECK_FILE_BEFORE='log_clearable Checking'
-	CHECK_FILE_AFTER='log_clear'
-	CHECK_FILE_LOG_NOT_REPRODUCIBLE='true'
-	if (( $# > 0 ))
+	if (( $# == 0 ))
+	then
+		FILE_TO_DIFF=""
+		DIFF_CMD="diff_silent"
+		CHECK_FILE_BEFORE='log_clearable Checking'
+		CHECK_FILE_AFTER='log_clear'
+		CHECK_FILE_LOG_NOT_REPRODUCIBLE='true'
+	elif (( $# == 1 ))
 	then
 		FILE_TO_DIFF="$1"
 		DIFF_CMD="diff_patch"
@@ -119,10 +136,7 @@ check_single_version_from_argument() {
 		CHECK_FILE_AFTER='true'
 		CHECK_FILE_LOG_NOT_REPRODUCIBLE='log'
 		shift
-	fi
-
-	if (( $# > 1 ))
-	then
+	else
 		log "ERROR: Wrong number of arguments."
 		usage
 		abort
@@ -133,8 +147,10 @@ check_single_version_from_argument() {
 	GIT_CLONE_DIR="$WORK_DIR/git-clone"
 	REBUILT_MAVEN_REPO_DIR="$WORK_DIR/rebuilt-maven-repo"
 	PUBLISHED_MAVEN_REPO_DIR="$WORK_DIR/published-maven-repo"
+	PUBLISHED_DOCS_DIR="$WORK_DIR/published-docs"
 	MAVEN_REPO="https://repo1.maven.org/maven2"
 	GRADLE_PLUGIN_REPO="https://plugins.gradle.org/m2"
+	DOCS_URL="https://docs.jboss.org/hibernate/$PROJECT/$(echo "$VERSION" | sed -E 's/^([0-9]+\.[0-9]+).*/\1/')"
 
 	rebuild
 
@@ -144,16 +160,37 @@ check_single_version_from_argument() {
 	FILE_DIFFERENT_COUNT=0
 	FILE_DIFFERENT_KNOWN_NOT_REPRODUCIBLE_COUNT=0
 
-	mkdir -p "$PUBLISHED_MAVEN_REPO_DIR"
-	if [ -n "$FILE_TO_DIFF" ]
+	if [ -z "$FILE_TO_DIFF" ]
 	then
-		check_artifact "$FILE_TO_DIFF"
-	else
 		trap "on_exit" EXIT
-		for file in $(find "$REBUILT_MAVEN_REPO_DIR" -regex ".*/$VERSION/[^/]*" -type f -printf '%P\n')
-		do
-			check_artifact "$file"
-		done
+	fi
+
+	if (( CHECK_MAVEN ))
+	then
+		mkdir -p "$PUBLISHED_MAVEN_REPO_DIR"
+		if [ -n "$FILE_TO_DIFF" ]
+		then
+			check_artifact "$FILE_TO_DIFF"
+		else
+			for file in $(find "$REBUILT_MAVEN_REPO_DIR" -regex ".*/$VERSION/[^/]*" -type f -printf '%P\n')
+			do
+				check_artifact "$file"
+			done
+		fi
+	fi
+	if (( CHECK_DOCS ))
+	then
+		REBUILT_DOCS_DIR="$GIT_CLONE_DIR/$(docs_relative_path)"
+		mkdir -p "$PUBLISHED_DOCS_DIR"
+		if [ -n "$FILE_TO_DIFF" ]
+		then
+			check_docs_file "$FILE_TO_DIFF"
+		else
+			for file in $(find "$REBUILT_DOCS_DIR" -not -regex ".*/fragments/.*" -type f -printf '%P\n')
+			do
+				check_docs_file "$file"
+			done
+		fi
 	fi
 	CHECK_DONE=1
 }
@@ -185,7 +222,9 @@ rebuild() {
 	mkdir -p "$REBUILT_MAVEN_REPO_DIR"
 
 	log "Building using Java Home: $JHOME"
-	./gradlew publishToMavenLocal -x test --no-build-cache -Dmaven.repo.local="$REBUILT_MAVEN_REPO_DIR" -Dorg.gradle.java.home="$JHOME"
+	./gradlew -x test --no-build-cache -Dmaven.repo.local="$REBUILT_MAVEN_REPO_DIR" -Dorg.gradle.java.home="$JHOME" \
+		$( (( CHECK_MAVEN )) && echo publishToMavenLocal ) \
+		$( (( CHECK_DOCS )) && gradle_options_for_docs )
 }
 
 apply_build_fixes() {
@@ -231,8 +270,15 @@ unpredictable order of content that doesn't change semantics, ...
 
 $(tput bold)Found $FILE_DIFFERENT_COUNT files containing significant differences.$(tput sgr0)
 $((( CHECK_DONE != 1 )) && echo -e "\nWARNING: This check was terminated unexpectedly, this report is incomplete.")
-================================================================================
-Run $0 $PROJECT $VERSION <artifact-path> to show the diff for a particular artifact."
+================================================================================"
+	if (( CHECK_MAVEN))
+	then
+		echo "Run $0 $PROJECT $VERSION <artifact-path> to show the diff for a particular artifact."
+	fi
+	if (( CHECK_DOCS))
+	then
+		echo "Run $0 -dM $PROJECT $VERSION <file-path> to show the diff for a documentation file."
+	fi
 }
 
 check_artifact() {
@@ -243,7 +289,7 @@ check_artifact() {
 	published_path="$PUBLISHED_MAVEN_REPO_DIR/$name"
 	local rebuilt_path
 	rebuilt_path="$REBUILT_MAVEN_REPO_DIR/$name"
-	download_published "$name" "$published_path"
+	download_artifact "$name" "$published_path"
 
 	if ! [[ "$name" =~ .*\.jar$ ]]
 	then
@@ -260,8 +306,8 @@ check_artifact() {
 	published_extracted_path="$PUBLISHED_MAVEN_REPO_DIR/extracted/$name_without_jar"
 	local rebuilt_extracted_path
 	rebuilt_extracted_path="$REBUILT_MAVEN_REPO_DIR/extracted/$name_without_jar"
-	extract_jar "$rebuilt_path" "$rebuilt_extracted_path"
-	extract_jar "$published_path" "$published_extracted_path"
+	extract "$rebuilt_path" "$rebuilt_extracted_path"
+	extract "$published_path" "$published_extracted_path"
 
 	# List new or different files
 	for path in $(list_binary_different_files "$rebuilt_extracted_path" "$published_extracted_path")
@@ -272,7 +318,7 @@ check_artifact() {
 	rm -rf "$rebuilt_extracted_path" "$published_extracted_path"
 }
 
-download_published() {
+download_artifact() {
 	mkdir -p "$(dirname "$2")"
 	local repo
 	if [[ "$1" =~ gradle.plugin ]] || [[ "$1" =~ "/gradle/" ]]
@@ -288,6 +334,55 @@ download_published() {
 	else
 		log
 		log "Download failed for $repo/$1"
+		exit 1
+	fi
+}
+
+check_docs_file() {
+	local name
+	name="$1"
+	local published_path
+	published_path="$PUBLISHED_DOCS_DIR/$name"
+	local rebuilt_path
+	rebuilt_path="$REBUILT_DOCS_DIR/$name"
+	download_docs "$name" "$published_path"
+
+	if ! [[ "$name" =~ .*\.zip$ ]]
+	then
+		check_file "$name" "$REBUILT_MAVEN_REPO_DIR/$name" "$PUBLISHED_MAVEN_REPO_DIR/$name"
+		return
+	fi
+
+	# For ZIPs, inspect content
+	FILE_COUNT=$(( FILE_COUNT + 1 ))
+	local name_without_zip
+	name_without_zip="${name%.zip}"
+
+	local published_extracted_path
+	published_extracted_path="$PUBLISHED_DOCS_DIR/extracted/$name_without_zip"
+	local rebuilt_extracted_path
+	rebuilt_extracted_path="$REBUILT_DOCS_DIR/extracted/$name_without_zip"
+	extract "$rebuilt_path" "$rebuilt_extracted_path"
+	extract "$published_path" "$published_extracted_path"
+
+	# List new or different files
+	for path in $(list_binary_different_files "$rebuilt_extracted_path" "$published_extracted_path")
+	do
+		check_file "$name: $path" "$rebuilt_extracted_path/$path" "$published_extracted_path/$path"
+	done
+
+	rm -rf "$rebuilt_extracted_path" "$published_extracted_path"
+}
+
+download_docs() {
+	mkdir -p "$(dirname "$2")"
+	log_clearable "Downloading" "$DOCS_URL/$1"
+	if curl -f -s -S -o "$2" -L "$DOCS_URL/$1"
+	then
+		log_clear
+	else
+		log
+		log "Download failed for $DOCS_URL/$1"
 		exit 1
 	fi
 }
@@ -310,7 +405,7 @@ check_file() {
 	fi
 }
 
-extract_jar() {
+extract() {
 	log_clearable "Extracting" "$1"
 	rm -rf "$2"
 	mkdir -p "$2"
@@ -350,7 +445,7 @@ cat_silent() {
 }
 
 replace_timestamps() {
-	sed -E 's/20[[:digit:]]{2}-[[:digit:]]{1,2}-[[:digit:]]{1,2}([ T][[:digit:]]{2}:[[:digit:]]{2}(:[[:digit:]]{2})?)?/SOME_DATE/g'
+	sed -E 's/20[[:digit:]]{2}-[[:digit:]]{1,2}-[[:digit:]]{1,2}([ T][[:digit:]]{2}:[[:digit:]]{2}(:[[:digit:]]{2})?( \+[[:digit:]]{2,4}| UTC)?)?/SOME_DATE/g'
 }
 
 decompile() {
@@ -366,10 +461,69 @@ decompile() {
 	javap -v "$1" | grep -Ev '^Classfile .*\.class$|^  SHA-256 checksum|^  MD5 checksum|^  Last modified'
 }
 
-if (( $# < 2 ))
+CHECK_MAVEN=1
+CHECK_DOCS=0
+
+while getopts 'dDmM' opt
+do
+	case "$opt" in
+		m)
+			CHECK_MAVEN=1
+			;;
+		M)
+			CHECK_MAVEN=0
+			;;
+		d)
+			CHECK_DOCS=1
+			;;
+		D)
+			CHECK_DOCS=0
+			;;
+		\?)
+			usage
+			abort
+			;;
+	esac
+done
+
+ARGS_TO_FORWARD=( "$@" )
+unset 'ARGS_TO_FORWARD[-1]'
+shift $(( OPTIND - 1 ))
+
+if (( $# < 1 ))
 then
 	log "ERROR: Wrong number of arguments."
 	usage
+	abort
+fi
+
+if (( CHECK_MAVEN )) && (( CHECK_DOCS ))
+then
+	if (( $# > 2 ))
+	then
+		log "ERROR: Cannot pass a specific artifact when checking both Maven artifacts and docs."
+		usage
+		abort
+	fi
+fi
+
+if (( CHECK_MAVEN ))
+then
+	log "Will check Maven artifacts"
+else
+	log "Will NOT check Maven artifacts"
+fi
+
+if (( CHECK_DOCS ))
+then
+	log "Will check documentation"
+else
+	log "Will NOT check documentation"
+fi
+
+if ! (( CHECK_MAVEN )) && ! (( CHECK_DOCS))
+then
+	log "Nothing to check!"
 	abort
 fi
 
@@ -392,6 +546,12 @@ if [ -f "$LIST_PATH" ]
 then
 	log "Interpreting '$1' as a set of versions to test, listed in $LIST_PATH."
 	log
+	if (( $# > 1 ))
+	then
+		log "ERROR: Cannot pass a specific artifact when checking a set of versions."
+		usage
+		abort
+	fi
 	check_all_versions_from_file "$LIST_PATH"
 elif [[ "$1" =~ ^[1-9][0-9]*\.[0-9]+\.[0-9]+\..*$ ]]
 then

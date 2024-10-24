@@ -44,11 +44,30 @@ To diff all artifacts published for all versions of Hibernate ORM published betw
 ./check.sh orm 2024-04-to-10
 ```
 
+To diff documentation published to docs.jboss.org for a given version of a given Hibernate project, without checking Maven artifacts:
+
+```
+./check.sh -dM <project> <version>
+```
+
+To diff documentation published to docs.jboss.org for all versions of Hibernate ORM published between April 2024 and October 2024:
+
+```
+./check.sh -dM orm 2024-04-to-10-latest
+```
+
 Arguments:
 
 * `<project>`: The name of a Hibernate project, case sensitive. Currently accepts `orm` or `hcann`.
 * `<version>`: The version of the Hibernate project to rebuild and compare. Must include the `.Final` qualifier if relevant, e.g. `6.2.0.CR1` or `6.2.1.Final`.
 * `<artifact-path>`: The path of a single artifact to diff, relative to the root of the Maven repository. You can simply copy-paste paths reported by the all-artifact diff.
+
+Options:
+
+* `-m`: Check Maven artifacts (the default).
+* `-M`: Do not check Maven artifacts.
+* `-d`: Check documentation on docs.jboss.org.
+* `-D`: Do not check documentation on docs.jboss.org (the default).
 
 ## Examples
 
