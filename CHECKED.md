@@ -593,3 +593,110 @@ unpredictable order of content that doesn't change semantics, ...
 
 Found 0 files containing significant differences.
 ```
+
+### Documentation
+
+#### `6.2`
+
+```
+Finished checking version 6.2.32.Final on 2024-10-28T13:33+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.24" 2024-07-16
+    OpenJDK Runtime Environment Temurin-11.0.24+8 (build 11.0.24+8)
+    OpenJDK 64-Bit Server VM Temurin-11.0.24+8 (build 11.0.24+8, mixed mode)
+
+Examined 0 artifacts.
+Examined 555 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
+
+#### `6.4`
+
+```
+Finished checking version 6.4.10.Final on 2024-10-28T13:33+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.24" 2024-07-16
+    OpenJDK Runtime Environment Temurin-11.0.24+8 (build 11.0.24+8)
+    OpenJDK 64-Bit Server VM Temurin-11.0.24+8 (build 11.0.24+8, mixed mode)
+
+Examined 0 artifacts.
+Examined 555 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
+
+#### `6.5`
+
+```
+Finished checking version 6.5.3.Final on 2024-10-28T14:22+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.24" 2024-07-16
+    OpenJDK Runtime Environment Temurin-11.0.24+8 (build 11.0.24+8)
+    OpenJDK 64-Bit Server VM Temurin-11.0.24+8 (build 11.0.24+8, mixed mode)
+
+Examined 0 artifacts.
+Examined 555 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
+
+#### `6.6`
+
+```
+Finished checking version 6.6.1.Final on 2024-10-28T13:42+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.24" 2024-07-16
+    OpenJDK Runtime Environment Temurin-11.0.24+8 (build 11.0.24+8)
+    OpenJDK 64-Bit Server VM Temurin-11.0.24+8 (build 11.0.24+8, mixed mode)
+
+Examined 0 artifacts.
+Examined 621 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
+
+#### `7.0`
+
+```
+Finished checking version 7.0.0.Beta1 on 2024-10-28T13:49+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "17.0.12" 2024-07-16
+    OpenJDK Runtime Environment Temurin-17.0.12+7 (build 17.0.12+7)
+    OpenJDK 64-Bit Server VM Temurin-17.0.12+7 (build 17.0.12+7, mixed mode, sharing)
+
+Examined 0 artifacts.
+Examined 620 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+```
