@@ -2,7 +2,11 @@
 
 When you've checked a version, please add a new subsection here and copy-paste the output of the script.
 
-## Hibernate ORM `6.2.25.Final`
+## Hibernate ORM
+
+### Maven artifacts
+
+#### `6.2.25.Final`
 
 ```
 Finished checking version 6.2.25.Final on 2024-10-17T12:06+00:00 UTC
@@ -23,7 +27,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.2.26.Final`
+#### `6.2.26.Final`
 
 ```
 Finished checking version 6.2.26.Final on 2024-10-17T12:07+00:00 UTC
@@ -44,7 +48,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.2.27.Final`
+#### `6.2.27.Final`
 
 ```
 Finished checking version 6.2.27.Final on 2024-10-17T12:07+00:00 UTC
@@ -65,7 +69,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.2.28.Final`
+#### `6.2.28.Final`
 
 ```
 Finished checking version 6.2.28.Final on 2024-10-17T12:08+00:00 UTC
@@ -86,7 +90,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.2.29.Final`
+#### `6.2.29.Final`
 
 ```
 Finished checking version 6.2.29.Final on 2024-10-22T14:22+00:00 UTC
@@ -107,7 +111,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.2.30.Final`
+#### `6.2.30.Final`
 
 ```
 Finished checking version 6.2.30.Final on 2024-10-17T12:08+00:00 UTC
@@ -128,7 +132,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.2.31.Final`
+#### `6.2.31.Final`
 
 ```
 Finished checking version 6.2.31.Final on 2024-10-17T12:09+00:00 UTC
@@ -149,7 +153,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.2.32.Final`
+#### `6.2.32.Final`
 
 ```
 Finished checking version 6.2.32.Final on 2024-10-17T12:09+00:00 UTC
@@ -170,7 +174,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.4.5.Final`
+#### `6.4.5.Final`
 
 ```
 Finished checking version 6.4.5.Final on 2024-10-17T12:10+00:00 UTC
@@ -191,7 +195,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.4.6.Final`
+#### `6.4.6.Final`
 
 ```
 Finished checking version 6.4.6.Final on 2024-10-17T12:11+00:00 UTC
@@ -212,7 +216,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.4.7.Final`
+#### `6.4.7.Final`
 
 ```
 Finished checking version 6.4.7.Final on 2024-10-17T12:11+00:00 UTC
@@ -233,7 +237,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.4.8.Final`
+#### `6.4.8.Final`
 
 ```
 Finished checking version 6.4.8.Final on 2024-10-17T12:12+00:00 UTC
@@ -254,7 +258,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.4.9.Final`
+#### `6.4.9.Final`
 
 ```
 Finished checking version 6.4.9.Final on 2024-10-17T12:13+00:00 UTC
@@ -275,7 +279,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.4.10.Final`
+#### `6.4.10.Final`
 
 ```
 Finished checking version 6.4.10.Final on 2024-10-17T12:13+00:00 UTC
@@ -296,7 +300,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.5.0.CR2`
+#### `6.5.0.CR2`
 
 ```
 Finished checking version 6.5.0.CR2 on 2024-10-18T15:31+00:00 UTC
@@ -317,7 +321,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.5.0.Final`
+#### `6.5.0.Final`
 
 ```
 Finished checking version 6.5.0.Final on 2024-10-17T12:20+00:00 UTC
@@ -338,7 +342,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.5.1.Final`
+#### `6.5.1.Final`
 
 ```
 Finished checking version 6.5.1.Final on 2024-10-17T12:23+00:00 UTC
@@ -359,7 +363,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.5.2.Final`
+#### `6.5.2.Final`
 
 ```
 Finished checking version 6.5.2.Final on 2024-10-17T12:27+00:00 UTC
@@ -380,7 +384,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.5.3.Final`
+#### `6.5.3.Final`
 
 ```
 Finished checking version 6.5.3.Final on 2024-10-18T15:35+00:00 UTC
@@ -401,7 +405,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.6.0.Alpha1`
+#### `6.6.0.Alpha1`
 
 ```
 Finished checking version 6.6.0.Alpha1 on 2024-10-18T15:46+00:00 UTC
@@ -422,7 +426,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.6.0.CR1`
+#### `6.6.0.CR1`
 
 ```
 Finished checking version 6.6.0.CR1 on 2024-10-18T15:50+00:00 UTC
@@ -443,7 +447,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.6.0.CR2`
+#### `6.6.0.CR2`
 
 ```
 Finished checking version 6.6.0.CR2 on 2024-10-17T12:27+00:00 UTC
@@ -464,7 +468,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.6.0.Final`
+#### `6.6.0.Final`
 
 ```
 Finished checking version 6.6.0.Final on 2024-10-17T12:29+00:00 UTC
@@ -485,7 +489,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `6.6.1.Final`
+#### `6.6.1.Final`
 
 ```
 Finished checking version 6.6.1.Final on 2024-10-17T12:30+00:00 UTC
@@ -506,7 +510,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `7.0.0.Alpha1`
+#### `7.0.0.Alpha1`
 
 ```
 Finished checking version 7.0.0.Alpha1 on 2024-10-22T14:03+00:00 UTC
@@ -527,7 +531,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `7.0.0.Alpha2`
+#### `7.0.0.Alpha2`
 
 ```
 Finished checking version 7.0.0.Alpha2 on 2024-10-18T15:59+00:00 UTC
@@ -548,7 +552,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `7.0.0.Alpha3`
+#### `7.0.0.Alpha3`
 
 ```
 Finished checking version 7.0.0.Alpha3 on 2024-10-18T16:06+00:00 UTC
@@ -569,7 +573,7 @@ unpredictable order of content that doesn't change semantics, ...
 Found 0 files containing significant differences.
 ```
 
-## Hibernate ORM `7.0.0.Beta1`
+#### `7.0.0.Beta1`
 
 ```
 Finished checking version 7.0.0.Beta1 on 2024-10-18T16:30+00:00 UTC
