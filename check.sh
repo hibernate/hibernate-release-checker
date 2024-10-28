@@ -101,7 +101,6 @@ check_all_versions_from_file() {
 			$0 "${ARGS_TO_FORWARD[@]}" "$version" </dev/null || log "Check failed."
 		} 2>&1 | tee "$WORK_DIR/$version.log"
 		log "Copied output to $WORK_DIR/$version.log"
-		shift
 	done
 
 	log "Copied output to files in $WORK_DIR"
