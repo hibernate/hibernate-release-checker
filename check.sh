@@ -319,6 +319,11 @@ check_artifact() {
 }
 
 download_artifact() {
+	if [ -f "$2" ]
+	then
+		# Already downloaded
+		return 0
+	fi
 	mkdir -p "$(dirname "$2")"
 	local repo
 	if [[ "$1" =~ gradle.plugin ]] || [[ "$1" =~ "/gradle/" ]]
@@ -375,6 +380,11 @@ check_docs_file() {
 }
 
 download_docs() {
+	if [ -f "$2" ]
+	then
+		# Already downloaded
+		return 0
+	fi
 	mkdir -p "$(dirname "$2")"
 	log_clearable "Downloading" "$DOCS_URL/$1"
 	if curl -f -s -S -o "$2" -L "$DOCS_URL/$1"
