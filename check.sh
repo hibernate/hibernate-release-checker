@@ -548,7 +548,7 @@ then
 fi
 source "$SPECIFICS_PATH"
 
-WORK_DIR_BASE="/tmp/hibernate-binary-check/$PROJECT"
+WORK_DIR_BASE="/tmp/hibernate-release-checker/$PROJECT"
 
 LIST_PATH="$SCRIPT_DIR/$PROJECT/$1.txt"
 if [ -f "$LIST_PATH" ]

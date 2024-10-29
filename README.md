@@ -1,4 +1,4 @@
-# hibernate-binary-checker
+# hibernate-release-checker
 
 ## Description
 
