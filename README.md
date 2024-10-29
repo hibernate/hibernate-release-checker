@@ -2,25 +2,26 @@
 
 ## Description
 
-Script that rebuilds Hibernate projects for a specific version and diffs the resulting binaries with published Maven artifacts.
+Script that rebuilds Hibernate projects for a specific version and diffs the resulting binaries and documentation with published Maven artifacts and documentation.
 
 Since older versions of Hibernate projects (ORM before https://github.com/hibernate/hibernate-orm/pull/8790, and perhaps other PRs) do not have a reproducible build, the script is more forgiving than a simple bit-by-bit comparison:
 
 * JARs are extracted and their entries compared, because the JARs format records timestamps that differ from one build to the next.
 * Text files get timestamps and other known differences (e.g. `aria-` tags in HTML) replaced.
-* Some generated source files (e.g. JAXB data classes) are consistently ignored.
+* Some generated source files (e.g. JAXB data classes) are consistently ignored, because the order of methods in these files is unpredictable. 
 
 See the source of the script for more details.
 
 ## Check history
 
-Artifacts that have been checked by team members are listed in `CHECKED.md`.
+Versions that have been checked by team members are listed in `CHECKED.md`.
 
 ## Requirements
 
 * A GNU/Linux environment -- not tested on other POSIX environments.
 * Various pre-installed commands, most of them usually installed by default:
   `git`, `diff`, `tput`, `unzip`, `curl`, `rsync`, `sed`, ...
+* Lots of disk space if you're going to check many versions: each build of Hibernate ORM has a multi-gigabyte disk footprint.
 
 ## Usage
 
@@ -58,7 +59,7 @@ To diff documentation published to docs.jboss.org for all versions of Hibernate 
 
 Arguments:
 
-* `<project>`: The name of a Hibernate project, case sensitive. Currently accepts `orm` or `hcann`.
+* `<project>`: The name of a Hibernate project, case sensitive. Currently accepts `orm`, `hcann` or `xjc`.
 * `<version>`: The version of the Hibernate project to rebuild and compare. Must include the `.Final` qualifier if relevant, e.g. `6.2.0.CR1` or `6.2.1.Final`.
 * `<artifact-path>`: The path of a single artifact to diff, relative to the root of the Maven repository. You can simply copy-paste paths reported by the all-artifact diff.
 
@@ -87,11 +88,13 @@ Options:
 ./check.sh orm 6.6.0.Final org/hibernate/orm/hibernate-gradle-plugin/6.6.0.Final/hibernate-gradle-plugin-6.6.0.Final.pom
 ```
 
-## Contributing
+## Disclaimers
 
-* Terminal output is best-effort; it might glitch from time to time.
+* Terminal output is best-effort: it is known to glitch from time to time.
+* This tool currently handles a few targeted versions only.
+  We only intend to support checking newer/older versions as the need arises.
 * Some versions of Hibernate projects may not build properly.
-  If so, you need to contribute hacks to the `rebuild()` function in `check.sh`.
+  If so, you need to contribute hacks to the `fix_commits_for_version()` or `fix_for_version()` functions in `project>/specifics.sh`.
 * Some versions of Hibernate projects may have additional known differences in text files from one build to the next.
   If so, you need to contribute additional `sed` replacements to the `replace_common_text_differences()` function in `<project>/specifics.sh`.
 * Some versions of Hibernate projects may have additional non-reproducible files.
