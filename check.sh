@@ -11,32 +11,44 @@ abort() {
 
 usage() {
 	log "
-$0: Rebuilds a Hibernate project for a specific version and diffs the resulting binaries with published Maven artifacts and/or documentation.
+$0: rebuilds Hibernate projects for a specific version and checks that
+  resulting Maven artifacts and documentation are equivalent to the ones
+  published to Maven central and https://docs.jboss.org/hibernate.
+
+Requirements:
+
+  * A GNU/Linux environment -- not tested on other POSIX environments.
+  * Various pre-installed commands, most of them usually installed by default:
+    'git', 'diff', 'tput', 'unzip', 'curl', 'rsync', 'sed', ...
+  * 'JAVA<number>_HOME' environment variables that point to the path of JDK installations,
+    e.g. 'JAVA11_HOME', 'JAVA17_HOME', ...
+  * Lots of disk space if you're going to check many versions:
+    each build of Hibernate ORM has a multi-gigabyte disk footprint.
 
 Usage:
-  IMPORTANT: This script expects 'JAVA<number>_HOME' environment variables to be set to point to the path of JDK installations, e.g. 'JAVA11_HOME', 'JAVA17_HOME', ...
 
-  To diff all artifacts published for a given version of a Hibernate project:
-      $0 <project> <version>
-  To diff a single artifact published for a given version of a Hibernate project:
-      $0 <project> <version> <artifact-path>
-  To diff all artifacts published for all version of Hibernate ORM published between April 2024 and October 2024:
-      $0 orm 2024-04-to-10
-  To diff documentation published to docs.jboss.org for a given version of a given Hibernate project, without checking Maven artifacts:
-      $0 -dM <project> <version>
-  To diff documentation published to docs.jboss.org for all versions of Hibernate ORM published between April 2024 and October 2024:
-      $0 -dM orm 2024-04-to-10-latest
+  Check a given release of a Hibernate project:
+    $0 [options] <project> <version>
+  Check a single artifact or documentation file for a given release of a Hibernate project:
+    $0 [options] <project> <version> <artifact-path>
+  Check all releases listed in a file:
+    $0 [options] <project> <file-name-without-extension>
 
 Arguments:
+
   <project>:
     The name of a Hibernate project, case sensitive. Currently accepts 'orm' or 'hcann'.
   <version>:
     The version of the Hibernate project to rebuild and compare. Must include the '.Final' qualifier if relevant, e.g. '6.2.0.CR1' or '6.2.1.Final'.
   <artifact-path>:
     The path of a single artifact to diff, relative to the root of the Maven repository. You can simply copy-paste paths reported by the all-artifact diff.
+  <file-name-without-extension>:
+    The name of a file at path '<project>/<file-name-without-extension>.txt'.
 
 Options:
 
+  -h:
+    Show this help and exit.
   -m:
     Check Maven artifacts (the default).
   -M:
@@ -473,9 +485,13 @@ decompile() {
 CHECK_MAVEN=1
 CHECK_DOCS=0
 
-while getopts 'dDmM' opt
+while getopts 'hdDmM' opt
 do
 	case "$opt" in
+		h)
+			usage
+			exit 0
+			;;
 		m)
 			CHECK_MAVEN=1
 			;;

@@ -2,7 +2,7 @@
 
 ## Description
 
-Script that rebuilds Hibernate projects for a specific version and diffs the resulting binaries and documentation with published Maven artifacts and documentation.
+Script that rebuilds Hibernate projects for a specific version and checks that resulting Maven artifacts and documentation are equivalent to the ones published to Maven central and https://docs.jboss.org/hibernate.
 
 Since older versions of Hibernate projects (ORM before https://github.com/hibernate/hibernate-orm/pull/8790, and perhaps other PRs) do not have a reproducible build, the script is more forgiving than a simple bit-by-bit comparison:
 
@@ -21,71 +21,49 @@ Versions that have been checked by team members are listed in `CHECKED.md`.
 * A GNU/Linux environment -- not tested on other POSIX environments.
 * Various pre-installed commands, most of them usually installed by default:
   `git`, `diff`, `tput`, `unzip`, `curl`, `rsync`, `sed`, ...
+* `JAVA<number>_HOME` environment variables that point to the path of JDK installations, e.g. `JAVA11_HOME`, `JAVA17_HOME`, ...
 * Lots of disk space if you're going to check many versions: each build of Hibernate ORM has a multi-gigabyte disk footprint.
 
 ## Usage
 
-IMPORTANT: This script expects `JAVA<number>_HOME` environment variables to be set to point to the path of JDK installations, e.g. `JAVA11_HOME`, `JAVA17_HOME`, ...
-
-To diff all artifacts published for a given version of a Hibernate project:
-
-```
-./check.sh <project> <version>
-```
-
-To diff a single artifact published for a given version of a Hibernate project:
-
-```
-./check.sh <project> <version> <artifact-path>
-```
-
-To diff all artifacts published for all versions of Hibernate ORM published between April 2024 and October 2024:
-
-```
-./check.sh orm 2024-04-to-10
-```
-
-To diff documentation published to docs.jboss.org for a given version of a given Hibernate project, without checking Maven artifacts:
-
-```
-./check.sh -dM <project> <version>
-```
-
-To diff documentation published to docs.jboss.org for all versions of Hibernate ORM published between April 2024 and October 2024:
-
-```
-./check.sh -dM orm 2024-04-to-10-latest
-```
-
-Arguments:
-
-* `<project>`: The name of a Hibernate project, case sensitive. Currently accepts `orm`, `hcann` or `xjc`.
-* `<version>`: The version of the Hibernate project to rebuild and compare. Must include the `.Final` qualifier if relevant, e.g. `6.2.0.CR1` or `6.2.1.Final`.
-* `<artifact-path>`: The path of a single artifact to diff, relative to the root of the Maven repository. You can simply copy-paste paths reported by the all-artifact diff.
-
-Options:
-
-* `-m`: Check Maven artifacts (the default).
-* `-M`: Do not check Maven artifacts.
-* `-d`: Check documentation on docs.jboss.org.
-* `-D`: Do not check documentation on docs.jboss.org (the default).
+Run `./check.sh -h` for help.
 
 ## Examples
+
+Check all published Maven artifacts for Hibernate ORM 6.6.0.Final:
 
 ```shell
 ./check.sh orm 6.6.0.Final
 ```
 
+Check all published Maven artifacts for Hibernate Commons Annotations 7.0.1.Final:
+
 ```shell
 ./check.sh hcann 7.0.1.Final
 ```
+
+Check `hibernate-core.jar` for Hibernate ORM 6.6.0.Final:
 
 ```shell
 ./check.sh orm 6.6.0.Final org/hibernate/orm/hibernate-core/6.6.0.Final/hibernate-core-6.6.0.Final.jar
 ```
 
+Check `hibernate-gradle-plugin.pom` for Hibernate ORM 6.6.0.Final:
+
 ```shell
 ./check.sh orm 6.6.0.Final org/hibernate/orm/hibernate-gradle-plugin/6.6.0.Final/hibernate-gradle-plugin-6.6.0.Final.pom
+```
+
+Check all published Maven artifacts for all versions of Hibernate ORM published between April 2024 and October 2024:
+
+```shell
+./check.sh orm 2024-04-to-10
+```
+
+Check all documentation published to docs.jboss.org for all releases of Hibernate ORM between April 2024 and October 2024:
+
+```shell
+./check.sh -dM orm 2024-04-to-10-latest
 ```
 
 ## Disclaimers
