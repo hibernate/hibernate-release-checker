@@ -513,7 +513,7 @@ Found 0 files containing significant differences.
 #### `7.0.0.Alpha1`
 
 ```
-Finished checking version 7.0.0.Alpha1 on 2024-10-22T14:03+00:00 UTC
+Finished checking version 7.0.0.Alpha1 on 2024-11-13T10:24+00:00 UTC
 
 Used the following JDK:
 
@@ -521,10 +521,10 @@ Used the following JDK:
     OpenJDK Runtime Environment Temurin-17.0.12+7 (build 17.0.12+7)
     OpenJDK 64-Bit Server VM Temurin-17.0.12+7 (build 17.0.12+7, mixed mode, sharing)
 
-Examined 0 artifacts.
-Examined 0 files (identical files within JARs are not counted).
+Examined 100 artifacts.
+Examined 9134 files (identical files within JARs are not counted).
 
-Ignored 0 files containing differences,
+Ignored 18 files containing differences,
 but that are known not to be reproducible: require a specific OpenJDK micro version,
 unpredictable order of content that doesn't change semantics, ...
 
