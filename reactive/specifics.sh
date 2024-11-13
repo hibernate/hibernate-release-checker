@@ -1,7 +1,8 @@
 GIT_REMOTE=git@github.com:hibernate/hibernate-reactive.git
 
 git_ref_for_version() {
-  echo "${VERSION}"
+	# Tags don't include the trailing ".Final"
+	echo "${VERSION%.Final}"
 }
 
 java_version_for_version() {
