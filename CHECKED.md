@@ -700,3 +700,183 @@ unpredictable order of content that doesn't change semantics, ...
 
 Found 0 files containing significant differences.
 ```
+
+## Hibernate Reactive
+
+### Maven artifacts
+
+#### `2.2.2.Final`
+
+```
+Finished checking version 2.2.2.Final on 2024-11-13T12:15+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.2" 2019-01-15
+    OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+    OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+
+Examined 5 artifacts.
+Examined 1154 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+1mFound 0 files containing significant differences.
+
+```
+
+#### `2.3.0.CR1`
+
+```
+Finished checking version 2.3.0.CR1 on 2024-11-13T12:15+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.2" 2019-01-15
+    OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+    OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+
+Examined 5 artifacts.
+Examined 1160 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+
+```
+
+#### `2.3.0.Final`
+
+```
+Finished checking version 2.3.0.Final on 2024-11-13T12:15+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.2" 2019-01-15
+    OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+    OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+
+Examined 5 artifacts.
+Examined 1164 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+
+```
+
+#### `2.3.1.Final`
+
+```
+Finished checking version 2.3.1.Final on 2024-11-13T12:15+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.2" 2019-01-15
+    OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+    OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+
+Examined 5 artifacts.
+Examined 1164 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+
+```
+
+#### `2.4.0.CR1`
+
+```
+Finished checking version 2.4.0.CR1 on 2024-11-13T12:15+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.2" 2019-01-15
+    OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+    OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+
+Examined 5 artifacts.
+Examined 1182 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+
+```
+
+#### `2.4.0.Final`
+
+```
+Finished checking version 2.4.0.Final on 2024-11-13T12:15+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.2" 2019-01-15
+    OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+    OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+
+Examined 5 artifacts.
+Examined 1182 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+
+```
+
+#### `2.4.1.Final`
+
+```
+Finished checking version 2.4.1.Final on 2024-11-13T12:15+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.2" 2019-01-15
+    OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+    OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+
+Examined 5 artifacts.
+Examined 1184 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+
+```
+
+#### `2.4.2.Final`
+
+```
+Finished checking version 2.4.2.Final on 2024-11-13T12:15+00:00 UTC
+
+Used the following JDK:
+
+    openjdk version "11.0.2" 2019-01-15
+    OpenJDK Runtime Environment 18.9 (build 11.0.2+9)
+    OpenJDK 64-Bit Server VM 18.9 (build 11.0.2+9, mixed mode)
+
+Examined 5 artifacts.
+Examined 1186 files (identical files within JARs are not counted).
+
+Ignored 0 files containing differences,
+but that are known not to be reproducible: require a specific OpenJDK micro version,
+unpredictable order of content that doesn't change semantics, ...
+
+Found 0 files containing significant differences.
+
+```
